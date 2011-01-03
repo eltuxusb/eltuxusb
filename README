@@ -1,0 +1,41 @@
+Intro:
+This program only works with the following devices:
+
+ELUSB-1 
+ELUSB-2
+
+support will be extended to other lascar products if possible (if I actually have another products in my hands)
+
+------------
+Install, ubuntu > 9.04 (not tested under 9.04):
+
+We need read and write access to the device, in order to do this as simple user and not root, you need to create a udev rule.
+- sudo touch /etc/udev/rules.d/10-local.rules
+- copy this into the created file: BUS=="usb", ATTR{idVendor}=="10c4", ATTR{idProduct}=="0002", MODE:="0666"
+- reboot
+
+Pyusb is needed to talk to the device, download it here: http://sourceforge.net/projects/pyusb/files/
+- unzip the file (I used the latest version pyusb-1.0.0-a0.zip)
+- compile the lib, into the extracted directory type: "python setup.py install"
+- copy the compiled files: cp -arv usb/ /usr/lib/pyshared/
+- test the pyusb libs: open a console, type "python" then "import usb.core" the module should load silently, if an error occurs then something has failed, retry the previous steps. Exit with CTRL+D
+
+------------
+Run the program:
+execute the el1_main.py file: ./el1_main.py
+
+------------
+Release note:
+27.12.2010, eltuxusb.0.3:
+- Adding support for the EL-USB-2
+- Code is now more modular, support could be easily me extended to other devices
+
+01.03.2010, eltuxusb.0.2:
+- Fixing an incorrect interpretation of DST (daylight saving time), program was calculating a wrong interval (in seconds) when user selected to delay the recording, this problem appeared after the DST adjustment last weekend.
+- The program now disable the download option if the device has not recorded anything. In case of the recording was delayed and the user try to download the data before the first record. It looks at the recording bits (bits 30 and 31).
+- Updated install procedure in this file, PID and VID where false and other little things.
+- Tar archive file now contains a directory eltuxusb (easier when extracting files).
+
+29.03.2010, eltuxusb.0.1a:
+- First public release 
+
