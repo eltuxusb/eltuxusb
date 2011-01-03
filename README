@@ -28,7 +28,7 @@ execute the el1_main.py file: ./el1_main.py
 Release note:
 27.12.2010, eltuxusb.0.3:
 - Adding support for the EL-USB-2
-- Code is now more modular, support could be easily me extended to other devices
+- Code is now more modular, support could be easily extended to other devices
 
 01.03.2010, eltuxusb.0.2:
 - Fixing an incorrect interpretation of DST (daylight saving time), program was calculating a wrong interval (in seconds) when user selected to delay the recording, this problem appeared after the DST adjustment last weekend.
