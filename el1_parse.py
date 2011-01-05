@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-# This module contains classes to manage EL1USB device
-# This class reads the content of the EL-USB-1 thermometer 
-
+# Here we convert the recorded data to human reading characters 
 
 
 import datetime
