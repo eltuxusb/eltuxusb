@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-# This module contains classes to manage EL1USB device
-# This class reads the content of the EL-USB-1 thermometer 
-
-
+# Here we set the diffrent values for the different devices
 
 import usb.core
 import usb.util
@@ -300,36 +297,4 @@ class el_buffer:
 			return False
 		else:
 			return True
-
-
-#original_buffer = [2, 0, 98, 117, 114, 101, 97, 117, 102, 105, 108, 105, 112, 101, 0, 0, 0, 0, 16, 8, 41, 14, 1, 10, 0, 0, 0, 0, 60, 0, 1, 0, 4, 0, 140, 80, 0, 0, 0, 63, 0, 0, 32, 194, 0, 0, 0, 0, 118, 50, 46, 48, 121, 243, 152, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-#model = "elusb2"
-#name = [666, 666, 666, 666, 666, 666, 666, 666, 666, 666, 666, 666, 666, 666, 666, 0]
-#flag_bits = [777, 777]
-
-#new_buffer = el_buffer()
-
-#new_buffer.set_model(model)
-
-#new_buffer.set_buffer(original_buffer)
-
-#new_buffer.setup()
-#new_buffer.set_name(name)
-#new_buffer.set_flag_bits(flag_bits)
-
-#final_buffer = new_buffer.get_new_buffer()
-#print final_buffer
-#print "taille buffer: ", len(final_buffer)
-
-
-
-
-
-
-
-
-
-
-
-
 
