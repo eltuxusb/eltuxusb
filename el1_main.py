@@ -1,5 +1,6 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
+# This module contains classes to manage EL1USB device
+# This class reads the content of the EL-USB-1 thermometer 
 
 from el1_device import *
 from el1_input import *

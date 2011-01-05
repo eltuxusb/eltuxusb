@@ -22,7 +22,7 @@ Pyusb is needed to talk to the device, download it here: http://sourceforge.net/
 
 ------------
 Run the program:
-execute the el1_main.py file: ./el1_main.py
+execute the eltuxusb.py file: ./eltuxusb.py or: python eltuxusb.py
 
 ------------
 Release note:

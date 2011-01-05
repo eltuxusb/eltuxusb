@@ -1,5 +1,7 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
+#! /usr/bin/env python
+
+#This is the main file to launch the program
 
 from el1_device import *
 from el1_input import *
