@@ -4,7 +4,7 @@
 
 import datetime
 import math
-from el1_device import *
+from el_device import *
 
 class el1_parse:
 	"This class contains everything for converting the recorded data into a file with human reading characters, the format of the files are the same as the ELWINUSB software"

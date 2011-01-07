@@ -3,9 +3,9 @@
 
 #This is the main file to launch the program
 
-from el1_device import *
-from el1_input import *
-from el1_parse import *
+from el_device import *
+from el_input import *
+from el_parse import *
 import pygtk
 pygtk.require("2.0")
 import gtk
