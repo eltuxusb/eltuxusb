@@ -104,6 +104,8 @@ class el1_math:
 class el1_device:
 	"Doc ..."
 	def __init__(self):
+		self.debug_actual_buffer = 0  # Debug output 1 = ON 
+		self.debug_stopped_buffer = 0 # Debug output 1 = ON 
 		self.device_model = ""
 		self.device_full_name = ""
 		self.last_error = ""
@@ -182,9 +184,11 @@ class el1_device:
 
 			stop_buffer = self.new_buffer.get_modified_buffer()
 		
-			print "actual_buffer: ", self.read_config 
+			if self.debug_actual_buffer == 1:
+				print "actual_buffer: ", self.read_config 
 
-			print "stopped buffer: ", stop_buffer
+			if self.debug_stopped_buffer == 1:
+				print "stopped buffer: ", stop_buffer
 
 			if self.config_write(stop_buffer) != True:
 				return False				
@@ -210,9 +214,11 @@ class el1_device:
 
 			self.config_write(stop_buffer)
 
-			print "actual_buffer: ", self.read_config 
+			if self.debug_actual_buffer == 1:
+				print "actual_buffer: ", self.read_config 
 
-			print "stopped buffer: ", stop_buffer
+			if self.debug_stopped_buffer == 1:
+				print "stopped buffer: ", stop_buffer
 
 			self.status = "stopped but NOT downloaded"
 
