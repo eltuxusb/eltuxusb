@@ -106,6 +106,7 @@ class el1_device:
 	def __init__(self):
 		self.debug_actual_buffer = 0  # Debug output 1 = ON 
 		self.debug_stopped_buffer = 0 # Debug output 1 = ON 
+		self.debug_recorded_data = 0  # Debug output 1 = ON 
 		self.device_model = ""
 		self.device_full_name = ""
 		self.last_error = ""
@@ -279,7 +280,6 @@ class el1_device:
 			read_device = self.address.read(0x82, 0x03, 0, 1000)
 	
 			self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x04)
-			print "I wrote this shit"
 			return True
 		
 	# This method reads the device status
@@ -324,7 +324,8 @@ class el1_device:
 		for i in range(self.device_nb_packets):
 			self.read_block.extend(self.address.read(0x82, 0x1000, 0, 1000))
 
-		#print self.read_block[0:1000]
+		if self.debug_recorded_data == 1:
+			print self.read_block[0:1000] 	
 
 		return True
 
