@@ -7,6 +7,7 @@
     <property name="title" translatable="yes">ELTuxUSB - ELUSB device manager</property>
     <property name="default_width">200</property>
     <property name="default_height">120</property>
+    <property name="icon">eltuxusb.png</property>
     <signal name="delete_event" handler="delete"/>
     <child>
       <widget class="GtkVBox" id="vbox1">
