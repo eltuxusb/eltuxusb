@@ -26,7 +26,11 @@ execute the eltuxusb.py file: ./eltuxusb.py or: python eltuxusb.py
 
 ------------
 Release note:
-27.12.2010, eltuxusb.0.3:
+
+08.01.2011, eltuxusb.0.3-SVN:
+- Corrected a bug with the high and low alarms, they now work and are writed in the output file as expected.
+
+27.12.2010, eltuxusb.0.3-SVN:
 - Adding support for the EL-USB-2
 - Code is now more modular, support could be easily extended to other devices
 

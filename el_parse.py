@@ -104,10 +104,10 @@ class el1_parse:
 		else:
 			self.file_header += self.text_dew_point_f
 
-		if self.high_alarm_status == 1:
+		if self.high_alarm_status == "1":
 			self.file_header += self.text_high_alarm
 
-		if self.low_alarm_status == 1:
+		if self.low_alarm_status == "1":
 			self.file_header += self.text_low_alarm
 	
 		self.file_header += self.text_serial_number
@@ -130,15 +130,15 @@ class el1_parse:
 				converted_temp = self.temp_convert(pair[0])
 				converted_hum = float(pair[1]) / 2
 				dew_point = self.dew_point(converted_temp, converted_hum)
-				converted_high_alarm = self.high_alarm_convert(config[34])
-				converted_low_alarm = self.low_alarm_convert(config[35])
+				converted_high_alarm = self.high_alarm_convert(self.raw_high_alarm)
+				converted_low_alarm = self.low_alarm_convert(self.raw_low_alarm)
 
 				line_content = str(line_position) + separator + date + separator + str(converted_temp) + separator + str(converted_hum) + separator + str(dew_point)
 				
-				if self.high_alarm_status == 1:
+				if self.high_alarm_status == "1":
 					line_content += separator + str(converted_high_alarm)
 
-				if self.low_alarm_status == 1:
+				if self.low_alarm_status == "1":
 					line_content += separator + str(converted_low_alarm)
 
 				if line_position == 1:
@@ -167,12 +167,12 @@ class el1_parse:
 		else:
 			self.file_header += self.text_fahrenheit
 
-		if self.high_alarm_status == 1:
+		if self.high_alarm_status == "1":
 			self.file_header += self.text_high_alarm
 
-		if self.low_alarm_status == 1:
+		if self.low_alarm_status == "1":
 			self.file_header += self.text_low_alarm
-	
+
 		self.file_header += self.text_serial_number
 		self.file_dest.write(self.file_header+"\n")
 
@@ -185,15 +185,15 @@ class el1_parse:
 	
 			converted_temp = self.temp_convert(value)
 
-			converted_high_alarm = self.high_alarm_convert(config[34])
-			converted_low_alarm = self.low_alarm_convert(config[35])
+			converted_high_alarm = self.high_alarm_convert(self.raw_high_alarm)
+			converted_low_alarm = self.low_alarm_convert(self.raw_low_alarm)
 
 			line_content = str(line_position) + separator + date + separator + str(converted_temp)
 			
-			if self.high_alarm_status == 1:
+			if self.high_alarm_status == "1":
 				line_content += separator + str(converted_high_alarm)
 
-			if self.low_alarm_status == 1:
+			if self.low_alarm_status == "1":
 				line_content += separator + str(converted_low_alarm)
 
 			if line_position == 1:
@@ -214,6 +214,8 @@ class el1_parse:
 	def data_translate(self, recordings, config, status, destination_file, model):
 		self.model = model
 		self.unit = config[46]
+		self.raw_high_alarm = config[34]
+		self.raw_low_alarm = config[35]
 		self.raw_data = recordings
 		self.dest_file = destination_file
 		self.name = self.name_translate(config)
@@ -233,19 +235,19 @@ class el1_parse:
 		if model == "elusb2":
 			self.elusb2_convert()
 
+###
+### This part of commented code is for my internal testing... Will be removed
+###
+#status = [0, 0] # high and low alarm states
+#config = [2, 0, 98, 117, 114, 101, 97, 117, 102, 105, 108, 105, 112, 101, 0, 0, 0, 0, 16, 8, 41, 14, 1, 10, 0, 0, 0, 0, 60, 0, 74, 0, 0, 0, 140, 80, 0, 0, 0, 63, 0, 0, 32, 194, 0, 0, 0, 0, 118, 50, 46, 48, 121, 243, 152, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
+#buffer_el1 = [136, 136, 135, 135, 135, 135, 134, 134, 134, 134, 255, 133, 133, 133]
+#buffer_el2 = [124, 96, 125, 97, 126, 98, 127, 97, 125, 97, 125, 97, 125, 97, 125, 97, 125, 98, 125, 97, 255, 97, 125, 97]
+#destination_file = "/tmp/test"
+#recordings = buffer_el1
+#model = "elusb1_16"
 
-
-status = [0, 0] # high and low alarm states
-config = [2, 0, 98, 117, 114, 101, 97, 117, 102, 105, 108, 105, 112, 101, 0, 0, 0, 0, 16, 8, 41, 14, 1, 10, 0, 0, 0, 0, 60, 0, 74, 0, 0, 0, 140, 80, 0, 0, 0, 63, 0, 0, 32, 194, 0, 0, 0, 0, 118, 50, 46, 48, 121, 243, 152, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-buffer_el1 = [136, 136, 135, 135, 135, 135, 134, 134, 134, 134, 255, 133, 133, 133]
-buffer_el2 = [124, 96, 125, 97, 126, 98, 127, 97, 125, 97, 125, 97, 125, 97, 125, 97, 125, 98, 125, 97, 255, 97, 125, 97]
-destination_file = "/tmp/test"
-recordings = buffer_el1
-model = "elusb1_16"
-
-el1_parse().data_translate(recordings, config, status, destination_file, model)
+#el1_parse().data_translate(recordings, config, status, destination_file, model)
 
 
 

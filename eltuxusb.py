@@ -73,9 +73,15 @@ class eltuxusb:
 	else:
 		if self.dev1.download() == False:
 			self.widgets.get_widget('label2').set_text(self.dev1.get_last_err()) 
+			##DEBUG##
+			# print "afiche status", self.dev1.get_status()
+			##DEBUG##
 
 		else:
 			self.parse.data_translate(self.dev1.get_data(), self.dev1.get_config(), self.dev1.get_status(), self.result, self.model)
+			##DEBUG##
+			# print "afiche status", self.dev1.get_status()
+			##DEBUG##
 			self.widgets.get_widget('label2').set_text('Downloaded and stopped')
 			self.widgets.get_widget('stop_button').set_sensitive(False)	
 
@@ -354,9 +360,9 @@ class eltuxusb:
 
 	
 
-		print "old buffer: ", old_buffer
-		print ""
-		print "new buffer: ", new_buffer		
+		#print "old buffer: ", old_buffer
+		#print ""
+		#print "new buffer: ", new_buffer		
 		
 		# old method to create buffer# self.buffer_new_record = self.dev1.rd_buffer.get_buffer()
 

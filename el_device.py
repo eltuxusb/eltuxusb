@@ -63,6 +63,10 @@ class el1_math:
 	def base2tostr(self, base2):
 		bin_32 = str(bin(base2)[2:])
 
+		##DEBUG##
+		#print "base2tostr", base2
+		##DEBUG##
+		
 		while len(bin_32) < 8:
 			bin_32 = "0" + bin_32
 
@@ -138,7 +142,12 @@ class el1_device:
 
 	def get_status(self):
 		#self.init()
-		self.status_read()	
+		self.status_read()
+	
+		##DEBUG##
+		#print "FlagBits", self.flag_bits
+		##DEBUG##
+
 		return self.flag_bits
 
 
@@ -263,7 +272,6 @@ class el1_device:
 
 		if self.new_buffer.verify_buffer() == False:
 			self.status = "Buffer error"
-			print "I wrote nothing"
 			return False
 
 		else:
@@ -286,6 +294,11 @@ class el1_device:
 	def status_read(self):
 
 		self.status = self.read_config[32:34]
+
+		##DEBUG##
+		#print "self.status", self.status
+		##DEBUG##
+
 		self.fb = el1_math()
 		self.flag_bits = ""
 		for i in self.status:
