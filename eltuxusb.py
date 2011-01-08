@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
 #This is the main file to launch the program
 
