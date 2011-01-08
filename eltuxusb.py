@@ -40,7 +40,6 @@ class eltuxusb:
 		   'on_refresh_button_clicked': self.refresh }
         self.widgets.signal_autoconnect(events)
 
-
     def delete(self, source=None, event=None):
 	gtk.main_quit()
 
@@ -332,8 +331,6 @@ class eltuxusb:
 	# If eveything's ok ve set the different values to the new buffer
 	if self.status == 0:
 
-
-
 		self.dev1.new_buffer.set_cmd_type(0)
 		self.dev1.new_buffer.set_flag_bits([int(self.flag_bit_32, 2), int(self.flag_bit_33, 2)])
 		self.dev1.new_buffer.set_name(self.converted_name)
@@ -372,53 +369,3 @@ if __name__ == '__main__':
     app = eltuxusb().refresh()
     gtk.main()
 
-
-
-
-## A UTILISER POUR LE PROGRAMME EN MODE SHELL
-#dev1 = el1_device("Device 1")
-
-#if dev1.download() == False:
-#	print dev1.get_last_err()
-#else:
-#	print "Downloaded and stopped"
-
-#	path = "/home/xens/Bureau/plip.txt"
-#	output = el1_parse()
-#	output.data_translate(dev1.get_data(), dev1.get_config(), dev1.get_status(), path)
-
-
-
-
-
-#restore orignial config_buffer
-#if dev1.restore_backup() == False:
-#	print dev1.get_last_err()
-
-
-
-
-
-#stop = "yes"
-#if stop == "yes":
-
-#	config = dev1.read_config
-#	print config
-
-#	recordings = dev1.read_block
-#	print recordings
-
-
-
-# Stop the device set the two bits to 0
-#dev1.rd_buffer.flag_bit = [fb1, 0]
-#buffer_stopped = dev1.rd_buffer.get_buffer()
-
-#print buffer_stopped
-
-#dev1.config_write(buffer_stopped)
-
-#print dev1.rd_buffer.get_buffer()
-
-#req  = el1_input()
-#bit3 = req.request("Enter value:", 0, 10, 50)
