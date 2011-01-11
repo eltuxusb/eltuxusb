@@ -208,20 +208,20 @@ class eltuxusb:
 		self.widgets.get_widget('checkbutton5').set_sensitive(False)
 
     def high_hum_alarm(self, source=None, event=None):
-	if self.widgets.get_widget('checkbutton2').get_active() == True:
-		self.widgets.get_widget('spin_button_high_alarm').set_sensitive(True)
-		self.widgets.get_widget('checkbutton4').set_sensitive(True)
+	if self.widgets.get_widget('checkbutton6').get_active() == True:
+		self.widgets.get_widget('spin_button_high_h_alarm').set_sensitive(True)
+		self.widgets.get_widget('checkbutton7').set_sensitive(True)
 	else:
-		self.widgets.get_widget('spin_button_high_alarm').set_sensitive(False)
-		self.widgets.get_widget('checkbutton4').set_sensitive(False)
+		self.widgets.get_widget('spin_button_high_h_alarm').set_sensitive(False)
+		self.widgets.get_widget('checkbutton7').set_sensitive(False)
 
     def low_hum_alarm(self, source=None, event=None):	
-	if self.widgets.get_widget('checkbutton3').get_active() == True:
-		self.widgets.get_widget('spin_button_low_alarm').set_sensitive(True)
-		self.widgets.get_widget('checkbutton5').set_sensitive(True)
+	if self.widgets.get_widget('checkbutton8').get_active() == True:
+		self.widgets.get_widget('spin_button_low_h_alarm').set_sensitive(True)
+		self.widgets.get_widget('checkbutton9').set_sensitive(True)
 	else:
-		self.widgets.get_widget('spin_button_low_alarm').set_sensitive(False)
-		self.widgets.get_widget('checkbutton5').set_sensitive(False)
+		self.widgets.get_widget('spin_button_low_h_alarm').set_sensitive(False)
+		self.widgets.get_widget('checkbutton9').set_sensitive(False)
 
 
 
@@ -230,14 +230,20 @@ class eltuxusb:
 	self.recording_name = ""
 	self.high_alarm = 0
 	self.high_alarm_latch = "0"
+	self.high_humidity_alarm = 0
+	self.high_humidity_alarm_latch = "0"
 	self.low_alarm = 0
 	self.low_alarm_latch = "0"
+	self.low_humidity_alarm = 0
+	self.low_humidity_alarm_latch = "0"
 	self.flag_bit_32 = ""
 	self.flag_bit_33 = ""
 	self.widgets.get_widget('label12').set_text("")
 	self.sample_rate = 0
 	self.high_alarm_value = 0
 	self.low_alarm_value = 0
+	self.high_humidity_alarm_value = 0
+	self.low_humidity_alarm_value = 0
 	self.unit = 0
 	self.start_sec = 0
 	self.status = 0
@@ -330,8 +336,55 @@ class eltuxusb:
 		self.low_alarm = "0"
 		self.low_alarm_value_converted = 0
 
-	self.flag_bit_32 += "0000" + self.low_alarm_latch + self.high_alarm_latch + self.low_alarm + self.high_alarm
+	if self.model == "elusb2":
+		# Check if high humidity alarm is enabled (and alarm latch)
+		if self.widgets.get_widget('checkbutton6').get_active() == True:
+			self.high_humidity_alarm = "1"
+			self.high_humidity_alarm_value = self.widgets.get_widget('spin_button_high_h_alarm').get_value() 
+			self.high_humidity_alarm_value_converted = el1_math().alarm_convert(self.high_humidity_alarm_value, self.unit)
+
+			if self.widgets.get_widget('checkbutton7').get_active() == True:
+				self.high_humidity_alarm_latch = "1"	
+
+		else:
+			self.high_humidity_alarm = "0"
+			self.high_humidity_alarm_latch = "0"
+			self.high_humidity_alarm_value_converted = 0
+
+		# Check if low humidity alarm is enabled (and alarm latch)
+		if self.widgets.get_widget('checkbutton8').get_active() == True:
+			self.low_humidity_alarm = "1"
+			self.low_humidity_alarm_value = self.widgets.get_widget('spin_button_low_h_alarm').get_value() 
+			self.low_humidity_alarm_value_converted = el1_math().alarm_convert(self.low_humidity_alarm_value, self.unit)
+
+			if self.widgets.get_widget('checkbutton9').get_active() == True:
+				self.low_humidity_alarm_latch = "1"	
+
+		else:
+			self.low_humidity_alarm = "0"
+			self.low_humidity_alarm_latch = "0"
+			self.low_humidity_alarm_value_converted = 0
+
+		self.flag_bit_32 += self.low_humidity_alarm_latch + self.high_humidity_alarm_latch + self.low_humidity_alarm + self.high_humidity_alarm + self.low_alarm_latch + self.high_alarm_latch + self.low_alarm + self.high_alarm
+
+	else:
+		self.flag_bit_32 += "0000" + self.low_alarm_latch + self.high_alarm_latch + self.low_alarm + self.high_alarm
+
 	self.flag_bit_33 += "00000011"
+
+	print "TEMP"
+	print "high temp alarm", self.high_alarm, self.high_alarm_value_converted
+	print "high temp alarm latch", self.high_alarm_latch
+	print "low temp alarm", self.low_alarm, self.low_alarm_value_converted
+	print "low temp alarm latch", self.low_alarm_latch
+	print ""
+	print "HUM"
+	print "high hum alarm", self.high_humidity_alarm, self.high_humidity_alarm_value_converted
+	print "high hum alarm latch", self.high_humidity_alarm_latch
+	print "low hum alarm", self.low_humidity_alarm, self.low_humidity_alarm_value_converted
+	print "low hum alarm latch", self.low_humidity_alarm_latch
+
+
 
 
 	# If eveything's ok ve set the different values to the new buffer
