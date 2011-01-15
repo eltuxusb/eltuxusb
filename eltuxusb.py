@@ -372,17 +372,17 @@ class eltuxusb:
 
 	self.flag_bit_33 += "00000011"
 
-	print "TEMP"
-	print "high temp alarm", self.high_alarm, self.high_alarm_value_converted
-	print "high temp alarm latch", self.high_alarm_latch
-	print "low temp alarm", self.low_alarm, self.low_alarm_value_converted
-	print "low temp alarm latch", self.low_alarm_latch
-	print ""
-	print "HUM"
-	print "high hum alarm", self.high_humidity_alarm, self.high_humidity_alarm_value_converted
-	print "high hum alarm latch", self.high_humidity_alarm_latch
-	print "low hum alarm", self.low_humidity_alarm, self.low_humidity_alarm_value_converted
-	print "low hum alarm latch", self.low_humidity_alarm_latch
+	#print "TEMP"
+	#print "high temp alarm", self.high_alarm, self.high_alarm_value_converted
+	#print "high temp alarm latch", self.high_alarm_latch
+	#print "low temp alarm", self.low_alarm, self.low_alarm_value_converted
+	#print "low temp alarm latch", self.low_alarm_latch
+	#print ""
+	#print "HUM"
+	#print "high hum alarm", self.high_humidity_alarm, self.high_humidity_alarm_value_converted
+	#print "high hum alarm latch", self.high_humidity_alarm_latch
+	#print "low hum alarm", self.low_humidity_alarm, self.low_humidity_alarm_value_converted
+	#print "low hum alarm latch", self.low_humidity_alarm_latch
 
 
 
