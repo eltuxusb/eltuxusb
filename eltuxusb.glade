@@ -731,7 +731,7 @@
                                 <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
                                 <property name="invisible_char">●</property>
-                                <property name="adjustment">10 -39.5 87.5 0.5 0.5 0</property>
+                                <property name="adjustment">10 0 100 1 0.5 0</property>
                                 <property name="climb_rate">0.10000000000000001</property>
                                 <property name="digits">1</property>
                               </widget>
@@ -814,7 +814,7 @@
                                 <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
                                 <property name="invisible_char">●</property>
-                                <property name="adjustment">0 -39.5 87.5 0.5 0.5 0</property>
+                                <property name="adjustment">0 0 100 1 0.5 0</property>
                                 <property name="climb_rate">0.01</property>
                                 <property name="digits">1</property>
                               </widget>
