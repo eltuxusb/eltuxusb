@@ -171,6 +171,12 @@ class el_buffer:
 	def set_sample_rate(self, sample_rate_value):
 		self.sample_rate = sample_rate_value
 
+	def set_hal_ch2(self, hal_ch2_value):
+		self.hal_ch2 = hal_ch2_value
+
+	def set_lal_ch2(self, lal_ch2_value):
+		self.lal_ch2 = lal_ch2_value
+
 	def set_hal(self, hal_value):
 		self.hal = hal_value
 

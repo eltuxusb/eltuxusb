@@ -341,7 +341,7 @@ class eltuxusb:
 		if self.widgets.get_widget('checkbutton6').get_active() == True:
 			self.high_humidity_alarm = "1"
 			self.high_humidity_alarm_value = self.widgets.get_widget('spin_button_high_h_alarm').get_value() 
-			self.high_humidity_alarm_value_converted = el1_math().alarm_convert(self.high_humidity_alarm_value, self.unit)
+			self.high_humidity_alarm_value_converted = el1_math().humidity_alarm_convert(self.high_humidity_alarm_value)
 
 			if self.widgets.get_widget('checkbutton7').get_active() == True:
 				self.high_humidity_alarm_latch = "1"	
@@ -355,7 +355,7 @@ class eltuxusb:
 		if self.widgets.get_widget('checkbutton8').get_active() == True:
 			self.low_humidity_alarm = "1"
 			self.low_humidity_alarm_value = self.widgets.get_widget('spin_button_low_h_alarm').get_value() 
-			self.low_humidity_alarm_value_converted = el1_math().alarm_convert(self.low_humidity_alarm_value, self.unit)
+			self.low_humidity_alarm_value_converted = el1_math().humidity_alarm_convert(self.low_humidity_alarm_value)
 
 			if self.widgets.get_widget('checkbutton9').get_active() == True:
 				self.low_humidity_alarm_latch = "1"	
@@ -404,7 +404,12 @@ class eltuxusb:
 		self.dev1.new_buffer.set_year(self.start_year)
 		self.dev1.new_buffer.set_hal(self.high_alarm_value_converted)
 		self.dev1.new_buffer.set_lal(self.low_alarm_value_converted)
+
 		self.dev1.new_buffer.set_sample_count([0, 0])
+
+		if self.model == "elusb2":
+			self.dev1.new_buffer.set_hal_ch2(self.high_humidity_alarm_value_converted)
+			self.dev1.new_buffer.set_lal_ch2(self.low_humidity_alarm_value_converted)
 
 		#self.dev1.new_buffer.set_sn([111, 111, 111, 111])
 

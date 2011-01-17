@@ -58,7 +58,14 @@ class el1_math:
 			self.value_converted = value + 40
 		
 		return int(self.value_converted)
-	
+
+	def humidity_alarm_convert(self, value):
+		self.value_converted = 0
+
+		self.value_converted = (value * 2)
+
+		return int(self.value_converted)
+
 	# convert the two flag bit into a "binary string" 
 	def base2tostr(self, base2):
 		bin_32 = str(bin(base2)[2:])

@@ -93,8 +93,8 @@ class el1_parse:
 	def humidity_alarm_convert(self, raw_humidity_alarm):
 
 		humidity_alarm_value = float(raw_humidity_alarm) / 2
-		return humidity_alarm_value
 
+		return humidity_alarm_value
 
 	# Convert the recorded data from the ELUSB2 device to the "standard" output format (same as the ELWINUSB software)
 	def elusb2_convert(self):
@@ -152,7 +152,7 @@ class el1_parse:
 				converted_low_alarm = self.low_alarm_convert(self.raw_low_alarm)
 				converted_high_hum_alarm = self.humidity_alarm_convert(self.raw_high_hum_alarm)
 				converted_low_hum_alarm = self.humidity_alarm_convert(self.raw_low_hum_alarm)
-
+	
 				line_content = str(line_position) + separator + date + separator + str(converted_temp)
 				
 				if self.high_alarm_status == "1":
@@ -259,7 +259,6 @@ class el1_parse:
 		self.low_alarm_status = status[1]
 		self.high_hum_alarm_status = status[4]
 		self.low_hum_alarm_status = status[5]
-
 
 		if model == "elusb1_16":
 			self.elusb1_convert()
