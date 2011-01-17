@@ -16,6 +16,8 @@ class el1_parse:
 		self.raw_data = []
 		self.high_alarm_status = 0
 		self.low_alarm_status = 0
+		self.high_hum_alarm_status = 0
+		self.low_hum_alarm_status = 0
 		self.dest_file = ""
 		self.unit = 0
 		self.first_rec_time = 0
@@ -25,6 +27,8 @@ class el1_parse:
 		self.text_fahrenheit = ",Fahrenheit(°F)"
 		self.text_high_alarm = ",High Alarm"
 		self.text_low_alarm = ",Low Alarm"
+		self.text_high_hum_alarm = ",High Alarm rh"
+		self.text_low_hum_alarm = ",Low Alarm rh"
 		self.text_serial_number = ",Serial Number"
 		self.text_humidity = ",Humidity(%rh)"
 		self.text_dew_point_c = ",dew point(°C)"
@@ -85,6 +89,13 @@ class el1_parse:
 			low_alarm_value = float(raw_low_alarm - 40)
 			return low_alarm_value
 
+	# Extract the humidity alarm value from the config buffer
+	def humidity_alarm_convert(self, raw_humidity_alarm):
+
+		humidity_alarm_value = float(raw_humidity_alarm) / 2
+		return humidity_alarm_value
+
+
 	# Convert the recorded data from the ELUSB2 device to the "standard" output format (same as the ELWINUSB software)
 	def elusb2_convert(self):
 
@@ -97,18 +108,25 @@ class el1_parse:
 		else:
 			self.file_header += self.text_fahrenheit
 
-		self.file_header += self.text_humidity	
-
-		if self.unit == 0:
-			self.file_header += self.text_dew_point_c
-		else:
-			self.file_header += self.text_dew_point_f
-
 		if self.high_alarm_status == "1":
 			self.file_header += self.text_high_alarm
 
 		if self.low_alarm_status == "1":
 			self.file_header += self.text_low_alarm
+
+		self.file_header += self.text_humidity	
+
+		if self.high_hum_alarm_status == "1":
+			self.file_header += self.text_high_hum_alarm
+
+		if self.low_hum_alarm_status == "1":
+			self.file_header += self.text_low_hum_alarm
+
+
+		if self.unit == 0:
+			self.file_header += self.text_dew_point_c
+		else:
+			self.file_header += self.text_dew_point_f
 	
 		self.file_header += self.text_serial_number
 		self.file_dest.write(self.file_header+"\n")
@@ -132,14 +150,26 @@ class el1_parse:
 				dew_point = self.dew_point(converted_temp, converted_hum)
 				converted_high_alarm = self.high_alarm_convert(self.raw_high_alarm)
 				converted_low_alarm = self.low_alarm_convert(self.raw_low_alarm)
+				converted_high_hum_alarm = self.humidity_alarm_convert(self.raw_high_hum_alarm)
+				converted_low_hum_alarm = self.humidity_alarm_convert(self.raw_low_hum_alarm)
 
-				line_content = str(line_position) + separator + date + separator + str(converted_temp) + separator + str(converted_hum) + separator + str(dew_point)
+				line_content = str(line_position) + separator + date + separator + str(converted_temp)
 				
 				if self.high_alarm_status == "1":
 					line_content += separator + str(converted_high_alarm)
 
 				if self.low_alarm_status == "1":
 					line_content += separator + str(converted_low_alarm)
+
+				line_content += separator + str(converted_hum)
+
+				if self.high_hum_alarm_status == "1":
+					line_content += separator + str(converted_high_hum_alarm)
+
+				if self.low_hum_alarm_status == "1":
+					line_content += separator + str(converted_low_hum_alarm)
+
+				line_content += separator + str(dew_point)
 
 				if line_position == 1:
 					line_content += separator + str(self.serial)
@@ -216,6 +246,8 @@ class el1_parse:
 		self.unit = config[46]
 		self.raw_high_alarm = config[34]
 		self.raw_low_alarm = config[35]
+		self.raw_high_hum_alarm = config[56]
+		self.raw_low_hum_alarm = config[57]
 		self.raw_data = recordings
 		self.dest_file = destination_file
 		self.name = self.name_translate(config)
@@ -225,6 +257,9 @@ class el1_parse:
 		self.intervale_rec = (config[29] * 256) + config[28]
 		self.high_alarm_status = status[0]
 		self.low_alarm_status = status[1]
+		self.high_hum_alarm_status = status[4]
+		self.low_hum_alarm_status = status[5]
+
 
 		if model == "elusb1_16":
 			self.elusb1_convert()
