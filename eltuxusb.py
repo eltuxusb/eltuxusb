@@ -37,11 +37,21 @@ class eltuxusb:
                    'on_new_button_clicked': self.new_recording,
                    'on_stop_button_clicked': self.stop_recording,	
                    'on_apply_button_clicked': self.start_recording,
-		   'on_refresh_button_clicked': self.refresh }
+                   'on_radiobutton1_toggled': self.switch_unit,
+				   'on_refresh_button_clicked': self.refresh }
         self.widgets.signal_autoconnect(events)
 
     def delete(self, source=None, event=None):
 	gtk.main_quit()
+
+    def switch_unit(self, source=None, event=None):
+
+		if self.widgets.get_widget('radiobutton1').get_active():
+			self.widgets.get_widget('label9').set_text("high temp. alarm: (°C)")
+			self.widgets.get_widget('label8').set_text("high temp. alarm: (°C)")
+		else:
+			self.widgets.get_widget('label9').set_text("high temp. alarm: (°F)")
+			self.widgets.get_widget('label8').set_text("high temp. alarm: (°F)")
 
     def download(self, source=None, event=None):
 
