@@ -26,7 +26,7 @@ class eltuxusb:
 	self.file = ""
 	self.name_recording = ""
 	self.model = ""
-        self.widgets = gtk.glade.XML('eltuxusb.glade',"window1")
+        self.widgets = gtk.glade.XML('eltuxusb.glade',"main_window")
         events = { 'on_download_button_clicked': self.download,
                    'delete': self.delete,  
                    'on_checkbutton1_toggled': self.delay_recording,  
@@ -38,8 +38,10 @@ class eltuxusb:
                    'on_stop_button_clicked': self.stop_recording,	
                    'on_apply_button_clicked': self.start_recording,
                    'on_radiobutton1_toggled': self.switch_unit,
+                   'on_about_button_clicked': self.about_windows,
 				   'on_refresh_button_clicked': self.refresh }
         self.widgets.signal_autoconnect(events)
+
 
     def delete(self, source=None, event=None):
 	gtk.main_quit()
@@ -52,6 +54,21 @@ class eltuxusb:
 		else:
 			self.widgets.get_widget('label9').set_text("high temp. alarm: (°F)")
 			self.widgets.get_widget('label8').set_text("high temp. alarm: (°F)")
+
+    def about_windows(self, source=None, event=None):
+	self.about = gtk.AboutDialog()
+	self.about.set_position(gtk.WIN_POS_CENTER)
+
+	self.about.set_name("ELTuxUSB")
+	self.about.set_program_name("ELTuxUSB")        
+	self.about.set_website("eltuxusb.sourceforge.net")
+	self.about.set_website_label("eltuxusb.sourceforge.net")       
+	self.about.set_copyright(u'Copyright \u00A9 2009-2010 Romain Aviolat')
+	self.about.set_version("0.3")
+	self.about.set_authors(["Romain Aviolat"])
+
+	self.about.run()
+	self.about.destroy()
 
     def download(self, source=None, event=None):
 
