@@ -27,6 +27,10 @@ execute the eltuxusb.py file: ./eltuxusb.py or: python eltuxusb.py
 ------------
 Release note:
 
+20.01.2011, eltuxusb.0.3-SVN:
+- The elusb2 should now be fully supported (Alarms, generated output files, ...). The 0.3 version'll be out soon.
+- Added a "about" menu
+
 08.01.2011, eltuxusb.0.3-SVN:
 - Corrected a bug with the high and low alarms, they now work and are writed in the output file as expected.
 
