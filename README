@@ -27,6 +27,9 @@ execute the eltuxusb.py file: ./eltuxusb.py or: python eltuxusb.py
 ------------
 Release note:
 
+22.01.2011, eltuxusb.0.3-SVN:
+- Correcting last bugs before the 0.3 relase
+
 20.01.2011, eltuxusb.0.3-SVN:
 - The elusb2 should now be fully supported (Alarms, generated output files, ...). The 0.3 version'll be out soon.
 - Added a "about" menu
