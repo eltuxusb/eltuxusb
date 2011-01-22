@@ -338,7 +338,7 @@ class el1_device:
 
 		self.device_nb_packets = self.settings.get_device_nb_packets(self.device_model)
 
-		print self.device_nb_packets
+		#print self.device_nb_packets
 
 		# read the recordings (size depends of the device)	
 		for i in range(self.device_nb_packets):
