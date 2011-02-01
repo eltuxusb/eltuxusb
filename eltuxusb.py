@@ -3,17 +3,14 @@
 
 #This is the main file to launch the program
 
-from el_device import *
-from el_input import *
-from el_parse import *
+from el_device import * # <- need to clean, dirty 
+from el_input import *  # <- need to clean, dirty 
+from el_parse import *  # <- need to clean, dirty 
 import pygtk
 pygtk.require("2.0")
-import gtk
-import gtk.glade
-import datetime
-import time
+import gtk, gtk.glade
+import os, datetime, time
 from time import localtime
-import os
 
 pathname = os.path.dirname(sys.argv[0])        
 full_path = os.path.abspath(pathname) 
@@ -100,15 +97,13 @@ class eltuxusb:
 	else:
 		if self.dev1.download() == False:
 			self.widgets.get_widget('label2').set_text(self.dev1.get_last_err()) 
-			##DEBUG##
-			# print "afiche status", self.dev1.get_status()
-			##DEBUG##
+			
+			# print "afiche status", self.dev1.get_status() 
+
 
 		else:
 			self.parse.data_translate(self.dev1.get_data(), self.dev1.get_config(), self.dev1.get_status(), self.result, self.model)
-			##DEBUG##
-			# print "afiche status", self.dev1.get_status()
-			##DEBUG##
+			# print "afiche status", self.dev1.get_status() ##DEBUG##
 			self.widgets.get_widget('label2').set_text('Downloaded and stopped')
 			self.widgets.get_widget('stop_button').set_sensitive(False)	
 
@@ -399,21 +394,6 @@ class eltuxusb:
 
 	self.flag_bit_33 += "00000011"
 
-	#print "TEMP"
-	#print "high temp alarm", self.high_alarm, self.high_alarm_value_converted
-	#print "high temp alarm latch", self.high_alarm_latch
-	#print "low temp alarm", self.low_alarm, self.low_alarm_value_converted
-	#print "low temp alarm latch", self.low_alarm_latch
-	#print ""
-	#print "HUM"
-	#print "high hum alarm", self.high_humidity_alarm, self.high_humidity_alarm_value_converted
-	#print "high hum alarm latch", self.high_humidity_alarm_latch
-	#print "low hum alarm", self.low_humidity_alarm, self.low_humidity_alarm_value_converted
-	#print "low hum alarm latch", self.low_humidity_alarm_latch
-
-
-
-
 	# If eveything's ok ve set the different values to the new buffer
 	if self.status == 0:
 
@@ -438,18 +418,10 @@ class eltuxusb:
 			self.dev1.new_buffer.set_hal_ch2(self.high_humidity_alarm_value_converted)
 			self.dev1.new_buffer.set_lal_ch2(self.low_humidity_alarm_value_converted)
 
-		#self.dev1.new_buffer.set_sn([111, 111, 111, 111])
+		#self.dev1.new_buffer.set_sn([111, 111, 111, 111]) ### TESTING PURPOSE
 
 		old_buffer = self.dev1.new_buffer.get_original_buffer()
 		new_buffer = self.dev1.new_buffer.get_modified_buffer()
-
-	
-
-		#print "old buffer: ", old_buffer
-		#print ""
-		#print "new buffer: ", new_buffer		
-		
-		# old method to create buffer# self.buffer_new_record = self.dev1.rd_buffer.get_buffer()
 
 		if self.dev1.config_write(new_buffer) == True:
 			self.widgets.get_widget('label12').set_text("Ready, please remove device")
