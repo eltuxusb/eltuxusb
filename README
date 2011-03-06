@@ -30,11 +30,12 @@ execute the eltuxusb.py file: ./eltuxusb.py or: python eltuxusb.py
 ------------
 Release note:
 
-06.03.2011, eltuxusb.0.3-SVN:
-- It can now generate a plot from the recorded files (both ELUSB1 and ELUSB2), it uses the matplot library so you need to install them
+06.03.2011, eltuxusb.0.4-SVN:
+- Can now generate a plot from the recorded files (both ELUSB1 and ELUSB2), it uses the matplot library so you need to install them
 
-22.01.2011, eltuxusb.0.3-SVN:
+22.01.2011, eltuxusb.0.3:
 - Correcting last bugs before the 0.3 relase
+- Final release
 
 20.01.2011, eltuxusb.0.3-SVN:
 - The elusb2 should now be fully supported (Alarms, generated output files, ...). The 0.3 version'll be out soon.
