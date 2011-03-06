@@ -20,12 +20,18 @@ Pyusb is needed to talk to the device, download it here: http://sourceforge.net/
 - copy the compiled files: cp -arv usb/ /usr/lib/pyshared/
 - test the pyusb libs: open a console, type "python" then "import usb.core" the module should load silently, if an error occurs then something has failed, retry the previous steps. Exit with CTRL+D
 
+Since the 06.03.2011 commit we also need the matplot library to be installed (to genrate the plot), under ubuntu the package's called python-matplotlib
+- sudo apt-get install python-matplotlib
+
 ------------
 Run the program:
 execute the eltuxusb.py file: ./eltuxusb.py or: python eltuxusb.py
 
 ------------
 Release note:
+
+06.03.2011, eltuxusb.0.3-SVN:
+- It can now generate a plot from the recorded files (both ELUSB1 and ELUSB2), it uses the matplot library so you need to install them
 
 22.01.2011, eltuxusb.0.3-SVN:
 - Correcting last bugs before the 0.3 relase

@@ -5,7 +5,8 @@
 
 from el_device import * # <- need to clean, dirty 
 from el_input import *  # <- need to clean, dirty 
-from el_parse import *  # <- need to clean, dirty 
+from el_parse import *  # <- need to clean, dirty
+from el_plot import *  # <- need to clean, dirty
 import pygtk
 pygtk.require("2.0")
 import gtk, gtk.glade
@@ -36,6 +37,7 @@ class eltuxusb:
                    'on_apply_button_clicked': self.start_recording,
                    'on_radiobutton1_toggled': self.switch_unit,
                    'on_about_button_clicked': self.about_windows,
+                   'on_graph_button_clicked': self.generate_graph,
 				   'on_refresh_button_clicked': self.refresh }
         self.widgets.signal_autoconnect(events)
 
@@ -66,6 +68,31 @@ class eltuxusb:
 
 	self.about.run()
 	self.about.destroy()
+
+    def generate_graph(self, source=None, event=None):
+
+	#self.dialog = "sgezg"
+        # Setup the filechooserdialog
+        chooser = gtk.FileChooserDialog(("select a previously saved recording"),
+            None,
+            gtk.FILE_CHOOSER_ACTION_SAVE,
+            buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE,
+                        gtk.RESPONSE_OK))
+
+        # Run the dialog
+        response = chooser.run()
+
+        if response == gtk.RESPONSE_OK:
+            self.result = chooser.get_filename()
+            graph = plot()
+            graph.parse_file(self.result)
+            graph.render_plot()
+
+        else:
+            chooser.destroy()
+            return
+
+        chooser.destroy()
 
     def download(self, source=None, event=None):
 

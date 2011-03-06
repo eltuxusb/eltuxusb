@@ -141,6 +141,19 @@
                           </packing>
                         </child>
                         <child>
+                          <widget class="GtkToolButton" id="graph_button">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">graph</property>
+                            <property name="use_underline">True</property>
+                            <property name="stock_id">gtk-select-all</property>
+                            <signal name="clicked" handler="on_graph_button_clicked"/>
+                          </widget>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
+                        <child>
                           <widget class="GtkToolButton" id="about_button">
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">About</property>
