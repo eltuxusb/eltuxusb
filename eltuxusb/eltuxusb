@@ -3,23 +3,26 @@
 
 #This is the main file to launch the program
 
+import os, datetime, time
+
+glade_file = 'eltuxusb.glade'
 try:
-    # First try and import using a PIP-installed package.
-    from eltuxusb.el_device import * # <- need to clean, dirty
-    from eltuxusb.el_input import *  # <- need to clean, dirty
-    from eltuxusb.el_parse import *  # <- need to clean, dirty
-    from eltuxusb.el_plot import *  # <- need to clean, dirty
-except ImportError:
-    # Handle the non-PIP case.
+    # Try the non-PIP case.
     from el_device import * # <- need to clean, dirty
     from el_input import *  # <- need to clean, dirty
     from el_parse import *  # <- need to clean, dirty
     from el_plot import *  # <- need to clean, dirty
+except ImportError:
+    # Maybe it's a PIP-installed package.
+    from eltuxusb.el_device import * # <- need to clean, dirty
+    from eltuxusb.el_input import *  # <- need to clean, dirty
+    from eltuxusb.el_parse import *  # <- need to clean, dirty
+    from eltuxusb.el_plot import *  # <- need to clean, dirty
+    glade_file = os.path.join([os.path.dirname(eltuxusb.__file__)], glade_file)
 
 import pygtk
 pygtk.require("2.0")
 import gtk, gtk.glade
-import os, datetime, time
 from time import localtime
 
 pathname = os.path.dirname(sys.argv[0])
@@ -33,7 +36,7 @@ class eltuxusb:
         self.file = ""
         self.name_recording = ""
         self.model = ""
-        self.widgets = gtk.glade.XML('eltuxusb.glade',"main_window")
+        self.widgets = gtk.glade.XML(glade_file,"main_window")
         events = { 'on_download_button_clicked': self.download,
                    'delete': self.delete,
                    'on_checkbutton1_toggled': self.delay_recording,
