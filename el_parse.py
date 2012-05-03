@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Here we convert the recorded data to human reading characters 
+# Here we convert the recorded data to human reading characters
 
 
 import datetime
@@ -7,267 +7,267 @@ import math
 from el_device import *
 
 class el1_parse:
-	"This class contains everything for converting the recorded data into a file with human reading characters, the format of the files are the same as the ELWINUSB software"
-	def __init__(self):
-		self.translated_data = ""
-		self.file_header = ""
-		self.serial = "" 
-		self.file_dest = ""
-		self.raw_data = []
-		self.high_alarm_status = 0
-		self.low_alarm_status = 0
-		self.high_hum_alarm_status = 0
-		self.low_hum_alarm_status = 0
-		self.dest_file = ""
-		self.unit = 0
-		self.first_rec_time = 0
-		self.intervale_rec = 0
-		self.name = ""
-		self.text_celsius = ",Celsius(°C)"
-		self.text_fahrenheit = ",Fahrenheit(°F)"
-		self.text_high_alarm = ",High Alarm"
-		self.text_low_alarm = ",Low Alarm"
-		self.text_high_hum_alarm = ",High Alarm rh"
-		self.text_low_hum_alarm = ",Low Alarm rh"
-		self.text_serial_number = ",Serial Number"
-		self.text_humidity = ",Humidity(%rh)"
-		self.text_dew_point_c = ",dew point(°C)"
-		self.text_dew_point_f = ",dew point(°F)"
-		self.text_time = ",Time"		
+    "This class contains everything for converting the recorded data into a file with human reading characters, the format of the files are the same as the ELWINUSB software"
+    def __init__(self):
+        self.translated_data = ""
+        self.file_header = ""
+        self.serial = ""
+        self.file_dest = ""
+        self.raw_data = []
+        self.high_alarm_status = 0
+        self.low_alarm_status = 0
+        self.high_hum_alarm_status = 0
+        self.low_hum_alarm_status = 0
+        self.dest_file = ""
+        self.unit = 0
+        self.first_rec_time = 0
+        self.intervale_rec = 0
+        self.name = ""
+        self.text_celsius = ",Celsius(°C)"
+        self.text_fahrenheit = ",Fahrenheit(°F)"
+        self.text_high_alarm = ",High Alarm"
+        self.text_low_alarm = ",Low Alarm"
+        self.text_high_hum_alarm = ",High Alarm rh"
+        self.text_low_hum_alarm = ",Low Alarm rh"
+        self.text_serial_number = ",Serial Number"
+        self.text_humidity = ",Humidity(%rh)"
+        self.text_dew_point_c = ",dew point(°C)"
+        self.text_dew_point_f = ",dew point(°F)"
+        self.text_time = ",Time"
 
 
-	# Extract the name of the recording from the config buffer
-	def name_translate(self, config):
-		self.name = ""
+    # Extract the name of the recording from the config buffer
+    def name_translate(self, config):
+        self.name = ""
 
-		self.name_byte = config[2:17]
+        self.name_byte = config[2:17]
 
-		for i in self.name_byte:
-	
-			if i == 0:
-				break			
-			else:
-				self.name += (chr(i))		
-		return self.name
+        for i in self.name_byte:
 
-	# This formula calculate the Dew point with temperature and relative humidity
-	def dew_point(self, temperature, relative_humidity):
-		T = temperature
-		RH = relative_humidity
-		LogEW = (0.66077+(7.5*T/ (237.3+T))+(math.log10(RH)-2))
-		Dp = ((0.66077-LogEW)*237.3) / (LogEW-8.16077)
-		return round(Dp, 1)
+            if i == 0:
+                break
+            else:
+                self.name += (chr(i))
+        return self.name
 
-	# Extract the temperature in Celsius or Fahrenheit from the config buffer
-	def temp_convert(self, raw_temp):
+    # This formula calculate the Dew point with temperature and relative humidity
+    def dew_point(self, temperature, relative_humidity):
+        T = temperature
+        RH = relative_humidity
+        LogEW = (0.66077+(7.5*T/ (237.3+T))+(math.log10(RH)-2))
+        Dp = ((0.66077-LogEW)*237.3) / (LogEW-8.16077)
+        return round(Dp, 1)
 
-		if self.unit == 0:
-			temperature = float(raw_temp - 80) / 2
-			return temperature
-		else:
-			temperature = float(raw_temp - 40)
-			return temperature
+    # Extract the temperature in Celsius or Fahrenheit from the config buffer
+    def temp_convert(self, raw_temp):
 
-	# Extract the high alarm value in Celsius or Fahrenheit from the config buffer
-	def high_alarm_convert(self, raw_high_alarm):
-		
-		if self.unit == 0:
-			high_alarm_value = float(raw_high_alarm - 80) / 2
-			return high_alarm_value
+        if self.unit == 0:
+            temperature = float(raw_temp - 80) / 2
+            return temperature
+        else:
+            temperature = float(raw_temp - 40)
+            return temperature
 
-		else:
-			high_alarm_value = float(raw_high_alarm - 40)
-			return high_alarm_value
+    # Extract the high alarm value in Celsius or Fahrenheit from the config buffer
+    def high_alarm_convert(self, raw_high_alarm):
 
-	# Extract the low alarm value in Celsius or Fahrenheit from the config buffer
-	def low_alarm_convert(self, raw_low_alarm):
+        if self.unit == 0:
+            high_alarm_value = float(raw_high_alarm - 80) / 2
+            return high_alarm_value
 
-		if self.unit == 0:
-			low_alarm_value = float(raw_low_alarm - 80) / 2
-			return low_alarm_value
-		else:
-			low_alarm_value = float(raw_low_alarm - 40)
-			return low_alarm_value
+        else:
+            high_alarm_value = float(raw_high_alarm - 40)
+            return high_alarm_value
 
-	# Extract the humidity alarm value from the config buffer
-	def humidity_alarm_convert(self, raw_humidity_alarm):
+    # Extract the low alarm value in Celsius or Fahrenheit from the config buffer
+    def low_alarm_convert(self, raw_low_alarm):
 
-		humidity_alarm_value = float(raw_humidity_alarm) / 2
+        if self.unit == 0:
+            low_alarm_value = float(raw_low_alarm - 80) / 2
+            return low_alarm_value
+        else:
+            low_alarm_value = float(raw_low_alarm - 40)
+            return low_alarm_value
 
-		return humidity_alarm_value
+    # Extract the humidity alarm value from the config buffer
+    def humidity_alarm_convert(self, raw_humidity_alarm):
 
-	# Convert the recorded data from the ELUSB2 device to the "standard" output format (same as the ELWINUSB software)
-	def elusb2_convert(self):
+        humidity_alarm_value = float(raw_humidity_alarm) / 2
 
-		self.file_dest = open(self.dest_file, 'w')
-		self.file_header += self.name + ",Time"
-		separator = ","
+        return humidity_alarm_value
 
-		if self.unit == 0:
-			self.file_header += self.text_celsius
-		else:
-			self.file_header += self.text_fahrenheit
+    # Convert the recorded data from the ELUSB2 device to the "standard" output format (same as the ELWINUSB software)
+    def elusb2_convert(self):
 
-		if self.high_alarm_status == "1":
-			self.file_header += self.text_high_alarm
+        self.file_dest = open(self.dest_file, 'w')
+        self.file_header += self.name + ",Time"
+        separator = ","
 
-		if self.low_alarm_status == "1":
-			self.file_header += self.text_low_alarm
+        if self.unit == 0:
+            self.file_header += self.text_celsius
+        else:
+            self.file_header += self.text_fahrenheit
 
-		self.file_header += self.text_humidity	
+        if self.high_alarm_status == "1":
+            self.file_header += self.text_high_alarm
 
-		if self.high_hum_alarm_status == "1":
-			self.file_header += self.text_high_hum_alarm
+        if self.low_alarm_status == "1":
+            self.file_header += self.text_low_alarm
 
-		if self.low_hum_alarm_status == "1":
-			self.file_header += self.text_low_hum_alarm
+        self.file_header += self.text_humidity
+
+        if self.high_hum_alarm_status == "1":
+            self.file_header += self.text_high_hum_alarm
+
+        if self.low_hum_alarm_status == "1":
+            self.file_header += self.text_low_hum_alarm
 
 
-		if self.unit == 0:
-			self.file_header += self.text_dew_point_c
-		else:
-			self.file_header += self.text_dew_point_f
-	
-		self.file_header += self.text_serial_number
-		self.file_dest.write(self.file_header+"\n")
+        if self.unit == 0:
+            self.file_header += self.text_dew_point_c
+        else:
+            self.file_header += self.text_dew_point_f
 
-		line_position = 1
-		value = self.raw_data[0]
-		raw_data_number = 1
-		count = 0
+        self.file_header += self.text_serial_number
+        self.file_dest.write(self.file_header+"\n")
 
-		while value != 255:
-			date = str(self.first_rec_time.strftime("%d/%m/%Y %H:%M:%S"))
-			if count == 0:
-				pair = [value]
-				count = 1
+        line_position = 1
+        value = self.raw_data[0]
+        raw_data_number = 1
+        count = 0
 
-			else:
-				pair.append(value)
-				count = 0       
-				converted_temp = self.temp_convert(pair[0])
-				converted_hum = float(pair[1]) / 2
-				dew_point = self.dew_point(converted_temp, converted_hum)
-				converted_high_alarm = self.high_alarm_convert(self.raw_high_alarm)
-				converted_low_alarm = self.low_alarm_convert(self.raw_low_alarm)
-				converted_high_hum_alarm = self.humidity_alarm_convert(self.raw_high_hum_alarm)
-				converted_low_hum_alarm = self.humidity_alarm_convert(self.raw_low_hum_alarm)
-	
-				line_content = str(line_position) + separator + date + separator + str(converted_temp)
-				
-				if self.high_alarm_status == "1":
-					line_content += separator + str(converted_high_alarm)
+        while value != 255:
+            date = str(self.first_rec_time.strftime("%d/%m/%Y %H:%M:%S"))
+            if count == 0:
+                pair = [value]
+                count = 1
 
-				if self.low_alarm_status == "1":
-					line_content += separator + str(converted_low_alarm)
+            else:
+                pair.append(value)
+                count = 0
+                converted_temp = self.temp_convert(pair[0])
+                converted_hum = float(pair[1]) / 2
+                dew_point = self.dew_point(converted_temp, converted_hum)
+                converted_high_alarm = self.high_alarm_convert(self.raw_high_alarm)
+                converted_low_alarm = self.low_alarm_convert(self.raw_low_alarm)
+                converted_high_hum_alarm = self.humidity_alarm_convert(self.raw_high_hum_alarm)
+                converted_low_hum_alarm = self.humidity_alarm_convert(self.raw_low_hum_alarm)
 
-				line_content += separator + str(converted_hum)
+                line_content = str(line_position) + separator + date + separator + str(converted_temp)
 
-				if self.high_hum_alarm_status == "1":
-					line_content += separator + str(converted_high_hum_alarm)
+                if self.high_alarm_status == "1":
+                    line_content += separator + str(converted_high_alarm)
 
-				if self.low_hum_alarm_status == "1":
-					line_content += separator + str(converted_low_hum_alarm)
+                if self.low_alarm_status == "1":
+                    line_content += separator + str(converted_low_alarm)
 
-				line_content += separator + str(dew_point)
+                line_content += separator + str(converted_hum)
 
-				if line_position == 1:
-					line_content += separator + str(self.serial)
+                if self.high_hum_alarm_status == "1":
+                    line_content += separator + str(converted_high_hum_alarm)
 
-				line_content += "\n"
+                if self.low_hum_alarm_status == "1":
+                    line_content += separator + str(converted_low_hum_alarm)
 
-				self.first_rec_time = self.first_rec_time + datetime.timedelta(0,self.intervale_rec)
+                line_content += separator + str(dew_point)
 
-				self.file_dest.write(line_content),
-				line_position += 1
+                if line_position == 1:
+                    line_content += separator + str(self.serial)
 
-			value = self.raw_data[raw_data_number]
-			raw_data_number += 1
-		self.file_dest.close()
+                line_content += "\n"
 
-	# Convert the recorded data from the ELUSB1 device to the "standard" output format (same as the ELWINUSB software)
-	def elusb1_convert(self):
+                self.first_rec_time = self.first_rec_time + datetime.timedelta(0,self.intervale_rec)
 
-		self.file_dest = open(self.dest_file, 'w')
-		self.file_header += self.name + ",Time"
-		separator = ","
+                self.file_dest.write(line_content),
+                line_position += 1
 
-		if self.unit == 0:
-			self.file_header += self.text_celsius
-		else:
-			self.file_header += self.text_fahrenheit
+            value = self.raw_data[raw_data_number]
+            raw_data_number += 1
+        self.file_dest.close()
 
-		if self.high_alarm_status == "1":
-			self.file_header += self.text_high_alarm
+    # Convert the recorded data from the ELUSB1 device to the "standard" output format (same as the ELWINUSB software)
+    def elusb1_convert(self):
 
-		if self.low_alarm_status == "1":
-			self.file_header += self.text_low_alarm
+        self.file_dest = open(self.dest_file, 'w')
+        self.file_header += self.name + ",Time"
+        separator = ","
 
-		self.file_header += self.text_serial_number
-		self.file_dest.write(self.file_header+"\n")
+        if self.unit == 0:
+            self.file_header += self.text_celsius
+        else:
+            self.file_header += self.text_fahrenheit
 
-		line_position = 1
-		value = self.raw_data[0]
-		raw_data_number = 1
+        if self.high_alarm_status == "1":
+            self.file_header += self.text_high_alarm
 
-		while value != 255:
-			date = str(self.first_rec_time.strftime("%d/%m/%Y %H:%M:%S"))
-	
-			converted_temp = self.temp_convert(value)
+        if self.low_alarm_status == "1":
+            self.file_header += self.text_low_alarm
 
-			converted_high_alarm = self.high_alarm_convert(self.raw_high_alarm)
-			converted_low_alarm = self.low_alarm_convert(self.raw_low_alarm)
+        self.file_header += self.text_serial_number
+        self.file_dest.write(self.file_header+"\n")
 
-			line_content = str(line_position) + separator + date + separator + str(converted_temp)
-			
-			if self.high_alarm_status == "1":
-				line_content += separator + str(converted_high_alarm)
+        line_position = 1
+        value = self.raw_data[0]
+        raw_data_number = 1
 
-			if self.low_alarm_status == "1":
-				line_content += separator + str(converted_low_alarm)
+        while value != 255:
+            date = str(self.first_rec_time.strftime("%d/%m/%Y %H:%M:%S"))
 
-			if line_position == 1:
-				line_content += separator + str(self.serial)
+            converted_temp = self.temp_convert(value)
 
-			line_content += "\n"
+            converted_high_alarm = self.high_alarm_convert(self.raw_high_alarm)
+            converted_low_alarm = self.low_alarm_convert(self.raw_low_alarm)
 
-			self.first_rec_time = self.first_rec_time + datetime.timedelta(0,self.intervale_rec)
+            line_content = str(line_position) + separator + date + separator + str(converted_temp)
 
-			self.file_dest.write(line_content),
-			line_position += 1
-			value = self.raw_data[raw_data_number]
-			raw_data_number += 1
+            if self.high_alarm_status == "1":
+                line_content += separator + str(converted_high_alarm)
 
-		self.file_dest.close()
+            if self.low_alarm_status == "1":
+                line_content += separator + str(converted_low_alarm)
 
-	# Extract the needed values to convert the recorded data (date, date offset, time between recordings, name of the recording, alarms, ...)
-	def data_translate(self, recordings, config, status, destination_file, model):
-		self.model = model
-		self.unit = config[46]
-		self.raw_high_alarm = config[34]
-		self.raw_low_alarm = config[35]
-		self.raw_high_hum_alarm = config[56]
-		self.raw_low_hum_alarm = config[57]
-		self.raw_data = recordings
-		self.dest_file = destination_file
-		self.name = self.name_translate(config)
-		self.serial = (config[55] * 16777216) + (config[54] * 65536) + (config[53] * 256) + (config[52])
-		self.offset_start = (config[27] * 16777216) + (config[26] * 65536) + (config[25] * 256) + (config[24])
-		self.first_rec_time = datetime.datetime(2000+config[23], config[22], config[21], config[18], config[19], config[20]) + datetime.timedelta(0,self.offset_start)
-		self.intervale_rec = (config[29] * 256) + config[28]
-		self.high_alarm_status = status[0]
-		self.low_alarm_status = status[1]
-		self.high_hum_alarm_status = status[4]
-		self.low_hum_alarm_status = status[5]
+            if line_position == 1:
+                line_content += separator + str(self.serial)
 
-		if model == "elusb1_16":
-			self.elusb1_convert()
+            line_content += "\n"
 
-		if model == "elusb1_17":
-			self.elusb1_convert()
+            self.first_rec_time = self.first_rec_time + datetime.timedelta(0,self.intervale_rec)
 
-		if model == "elusb2":
-			self.elusb2_convert()
+            self.file_dest.write(line_content),
+            line_position += 1
+            value = self.raw_data[raw_data_number]
+            raw_data_number += 1
+
+        self.file_dest.close()
+
+    # Extract the needed values to convert the recorded data (date, date offset, time between recordings, name of the recording, alarms, ...)
+    def data_translate(self, recordings, config, status, destination_file, model):
+        self.model = model
+        self.unit = config[46]
+        self.raw_high_alarm = config[34]
+        self.raw_low_alarm = config[35]
+        self.raw_high_hum_alarm = config[56]
+        self.raw_low_hum_alarm = config[57]
+        self.raw_data = recordings
+        self.dest_file = destination_file
+        self.name = self.name_translate(config)
+        self.serial = (config[55] * 16777216) + (config[54] * 65536) + (config[53] * 256) + (config[52])
+        self.offset_start = (config[27] * 16777216) + (config[26] * 65536) + (config[25] * 256) + (config[24])
+        self.first_rec_time = datetime.datetime(2000+config[23], config[22], config[21], config[18], config[19], config[20]) + datetime.timedelta(0,self.offset_start)
+        self.intervale_rec = (config[29] * 256) + config[28]
+        self.high_alarm_status = status[0]
+        self.low_alarm_status = status[1]
+        self.high_hum_alarm_status = status[4]
+        self.low_hum_alarm_status = status[5]
+
+        if model == "elusb1_16":
+            self.elusb1_convert()
+
+        if model == "elusb1_17":
+            self.elusb1_convert()
+
+        if model == "elusb2":
+            self.elusb2_convert()
 
 ###
 ### This part of commented code is for my internal testing... Will be removed
@@ -282,8 +282,3 @@ class el1_parse:
 #model = "elusb1_16"
 
 #el1_parse().data_translate(recordings, config, status, destination_file, model)
-
-
-
-
-
