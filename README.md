@@ -14,17 +14,17 @@ Support will be extended to other Lascar products if possible (if I actually hav
 We need read and write access to the device. To do this as a non-root user, you need to create a udev rule:
 
     echo 'BUS=="usb", ATTR{idVendor}=="10c4", ATTR{idProduct}=="0002", MODE:="0666"' | sudo tee /etc/udev/rules.d/10-local.rules
-    reboot
+    sudo reboot
 
 ### Ubuntu
 
- 1. sudo apt-get install python-dev gcc python-matplotlib python-pip git-core
- 2. sudo pip install git+http://github.com/eltuxusb/eltuxusb.git#egg=eltuxusb
+    sudo apt-get install python-dev gcc python-matplotlib python-pip git-core
+    sudo pip install git+http://github.com/eltuxusb/eltuxusb.git#egg=eltuxusb
 
 ### Fedora
 
- 1. sudo yum install python-pip gcc python-devel git
- 2. sudo pip-python install git+http://github.com/eltuxusb/eltuxusb.git#egg=eltuxusb
+    sudo yum install python-pip gcc python-devel git
+    sudo pip-python install git+http://github.com/eltuxusb/eltuxusb.git#egg=eltuxusb
 
 ## Usage
 
