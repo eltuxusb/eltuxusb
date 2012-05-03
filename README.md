@@ -23,7 +23,7 @@ We need read and write access to the device. To do this as a non-root user, you 
 
 ### Fedora
 
-    sudo yum install python-pip gcc python-devel git
+    sudo yum install python-pip gcc python-matplotlib python-devel git
     sudo pip-python install git+http://github.com/eltuxusb/eltuxusb.git#egg=eltuxusb
 
 ## Usage
