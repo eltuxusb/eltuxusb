@@ -30,4 +30,4 @@ We need read and write access to the device. To do this as a non-root user, you 
 
 Run the program, which PIP should have installed in your $PATH:
 
-    /usr/bin/eltuxusb
+    eltuxusb
