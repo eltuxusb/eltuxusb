@@ -1,0 +1,57 @@
+eltuxusb.0.4-SVN (2011-06-03)
+=============================
+
+Features
+--------
+    - Can now generate a plot from the recorded files (both ELUSB1 and ELUSB2), it uses the matplot library so you need to install them
+
+eltuxusb.0.3 (2011-01-22)
+=========================
+
+Other
+-----
+    - Correcting last bugs before the 0.3 relase
+    - Final release
+
+eltuxusb.0.3-SVN (2011-01-20)
+=============================
+
+Features
+--------
+    - The elusb2 should now be fully supported (Alarms, generated output files, ...). The 0.3 version'll be out soon.
+    - Added an "about" menu
+
+eltuxusb.0.3-SVN (2011-01-08)
+=============================
+
+Other
+-----
+    - Corrected a bug with the high and low alarms, they now work and are writed in the output file as expected.
+
+eltuxusb.0.3-SVN (2010-12-27)
+=============================
+
+Features
+--------
+    - Adding support for the EL-USB-2
+    
+Other
+-----
+    - Code is now more modular, support could be easily extended to other devices
+
+eltuxusb.0.2 (2010-03-01)
+=========================
+
+Other
+-----
+    - Fixing an incorrect interpretation of DST (daylight saving time), program was calculating a wrong interval (in seconds) when user selected to delay the recording, this problem appeared after the DST adjustment last weekend.
+    - The program now disable the download option if the device has not recorded anything. In case of the recording was delayed and the user try to download the data before the first record. It looks at the recording bits (bits 30 and 31).
+    - Updated install procedure in this file, PID and VID where false and other little things.
+    - Tar archive file now contains a directory eltuxusb (easier when extracting files).
+
+eltuxusb.0.1a (2010-03-29)
+==========================
+
+Other
+-----
+    - First public release 
