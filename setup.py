@@ -23,5 +23,6 @@ setup(name='eltuxusb',
       url = 'http://github.com/eltuxusb/eltuxusb',
       install_requires = ['matplotlib', 'pyusb'],
       packages = ['eltuxusb'],
-      scripts = ['eltuxusb/eltuxusb']
+      scripts = ['eltuxusb/eltuxusb'],
+      package_data = {'eltuxusb': ['*.glade', '*.png']}
       )
