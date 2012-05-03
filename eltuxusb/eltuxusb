@@ -3,10 +3,19 @@
 
 #This is the main file to launch the program
 
-from el_device import * # <- need to clean, dirty
-from el_input import *  # <- need to clean, dirty
-from el_parse import *  # <- need to clean, dirty
-from el_plot import *  # <- need to clean, dirty
+try:
+    # First try and import using a PIP-installed package.
+    from eltuxusb.el_device import * # <- need to clean, dirty
+    from eltuxusb.el_input import *  # <- need to clean, dirty
+    from eltuxusb.el_parse import *  # <- need to clean, dirty
+    from eltuxusb.el_plot import *  # <- need to clean, dirty
+except ImportError:
+    # Handle the non-PIP case.
+    from el_device import * # <- need to clean, dirty
+    from el_input import *  # <- need to clean, dirty
+    from el_parse import *  # <- need to clean, dirty
+    from el_plot import *  # <- need to clean, dirty
+
 import pygtk
 pygtk.require("2.0")
 import gtk, gtk.glade
