@@ -19,7 +19,7 @@ except ImportError:
     from eltuxusb.el_parse import *  # <- need to clean, dirty
     from eltuxusb.el_plot import *  # <- need to clean, dirty
     import pkgutil
-    glade_file = os.path.join([pkgutil.get_loader("eltuxusb").filename, glade_file])
+    glade_file = os.path.join(pkgutil.get_loader("eltuxusb").filename, glade_file)
 
 import pygtk
 pygtk.require("2.0")
