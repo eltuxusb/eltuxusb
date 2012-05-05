@@ -73,11 +73,12 @@ class eltuxusb:
 
         self.about.set_name("ELTuxUSB")
         self.about.set_program_name("ELTuxUSB")
-        self.about.set_website("eltuxusb.sourceforge.net")
-        self.about.set_website_label("eltuxusb.sourceforge.net")
-        self.about.set_copyright(u'Copyright \u00A9 2009-2010 Romain Aviolat')
+        self.about.set_website("https://github.com/eltuxusb")
+        self.about.set_website_label("https://github.com/eltuxusb")
+        self.about.set_copyright(u'Copyright \u00A9 2009-2012 Romain Aviolat')
         self.about.set_version("0.3")
-        self.about.set_authors(["Romain Aviolat"])
+        self.about.set_authors(["Romain Aviolat", "David Strauss"])
+
 
         self.about.run()
         self.about.destroy()
