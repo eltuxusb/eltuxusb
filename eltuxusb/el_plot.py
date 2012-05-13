@@ -87,7 +87,7 @@ class plot():
             self.date.append(datetime.datetime(int(self._year), int(self._month), int(self._day), int(self._hour), int(self._minute)))
             self.temp.append(self._temperature)
 
-            if self.deviceModel == "elusb2":
+            if self.deviceModel == "elusb2" or self.deviceModel == "elusb2lcd":
                 self.humidity = re.split(",", ligne)[self.humPos]
                 self.hum.append(self.humidity)
                 self.dew_point = re.split(",", ligne)[self.dewPointPos]
@@ -126,7 +126,7 @@ class plot():
                 self.dew = self.array_odd(self.dew, self.dew_odd)
 
         # Set the axes content
-        if self.deviceModel == "elusb2":
+        if self.deviceModel == "elusb2" or self.deviceModel == "elusb2lcd":
             self._tempPlot = self._ax.plot(self.date, self.temp, 'r.-', self.date, self.dew, 'g.-', linewidth=2)
             self._ax2 = self._ax.twinx()
             self.hum_plot = self._ax2.plot(self.date, self.hum, 'b.-', linewidth=2)
