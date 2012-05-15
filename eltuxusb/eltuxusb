@@ -22,8 +22,9 @@ except ImportError:
     glade_file = os.path.join(pkgutil.get_loader("eltuxusb").filename, glade_file)
 
 import pygtk
+import gobject
 pygtk.require("2.0")
-import gtk, gtk.glade
+import gtk
 from time import localtime
 
 pathname = os.path.dirname(sys.argv[0])
@@ -37,7 +38,8 @@ class eltuxusb:
         self.file = ""
         self.name_recording = ""
         self.model = ""
-        self.widgets = gtk.glade.XML(glade_file,"main_window")
+        self.widgets = gtk.Builder()
+        self.widgets.add_from_file('eltuxusb.glade')
         events = { 'on_download_button_clicked': self.download,
                    'delete': self.delete,
                    'on_checkbutton1_toggled': self.delay_recording,
@@ -51,8 +53,8 @@ class eltuxusb:
                    'on_radiobutton1_toggled': self.switch_unit,
                    'on_about_button_clicked': self.about_windows,
                    'on_graph_button_clicked': self.generate_graph,
-                                   'on_refresh_button_clicked': self.refresh }
-        self.widgets.signal_autoconnect(events)
+                   'on_refresh_button_clicked': self.refresh }
+        self.widgets.connect_signals(events)
 
 
     def delete(self, source=None, event=None):
@@ -60,12 +62,12 @@ class eltuxusb:
 
     def switch_unit(self, source=None, event=None):
 
-        if self.widgets.get_widget('radiobutton1').get_active():
-            self.widgets.get_widget('label9').set_text("high temp. alarm: (°C)")
-            self.widgets.get_widget('label8').set_text("high temp. alarm: (°C)")
+        if self.widgets.get_object('radiobutton1').get_active():
+            self.widgets.get_object('label9').set_text("high temp. alarm: (°C)")
+            self.widgets.get_object('label8').set_text("high temp. alarm: (°C)")
         else:
-            self.widgets.get_widget('label9').set_text("high temp. alarm: (°F)")
-            self.widgets.get_widget('label8').set_text("high temp. alarm: (°F)")
+            self.widgets.get_object('label9').set_text("high temp. alarm: (°F)")
+            self.widgets.get_object('label8').set_text("high temp. alarm: (°F)")
 
     def about_windows(self, source=None, event=None):
         self.about = gtk.AboutDialog()
@@ -131,13 +133,13 @@ class eltuxusb:
         chooser.destroy()
 
         if self.dev1.init() == False:
-            self.widgets.get_widget('label2').set_text(self.dev1.get_last_err())
-            self.widgets.get_widget("found").hide()
-            self.widgets.get_widget("not_found").show()
+            self.widgets.get_object('label2').set_text(self.dev1.get_last_err())
+            self.widgets.get_object("found").hide()
+            self.widgets.get_object("not_found").show()
 
         else:
             if self.dev1.download() == False:
-                self.widgets.get_widget('label2').set_text(self.dev1.get_last_err())
+                self.widgets.get_object('label2').set_text(self.dev1.get_last_err())
 
                 # print "afiche status", self.dev1.get_status()
 
@@ -145,21 +147,21 @@ class eltuxusb:
             else:
                 self.parse.data_translate(self.dev1.get_data(), self.dev1.get_config(), self.dev1.get_status(), self.result, self.model)
                 # print "afiche status", self.dev1.get_status() ##DEBUG##
-                self.widgets.get_widget('label2').set_text('Downloaded and stopped')
-                self.widgets.get_widget('stop_button').set_sensitive(False)
+                self.widgets.get_object('label2').set_text('Downloaded and stopped')
+                self.widgets.get_object('stop_button').set_sensitive(False)
 
 
     def refresh(self, source=None, event=None):
         if self.dev1.init() == False:
-            self.widgets.get_widget('label2').set_text(self.dev1.get_last_err())
-            self.widgets.get_widget('label15').set_text("")
-            self.widgets.get_widget("found").hide()
-            self.widgets.get_widget("not_found").show()
-            self.widgets.get_widget('stop_button').set_sensitive(False)
-            self.widgets.get_widget('download_button').set_sensitive(False)
-            self.widgets.get_widget('new_button').set_sensitive(False)
-            self.widgets.get_widget('entry1').set_text("")
-            self.widgets.get_widget('vbox3').hide()
+            self.widgets.get_object('label2').set_text(self.dev1.get_last_err())
+            self.widgets.get_object('label15').set_text("")
+            self.widgets.get_object("found").hide()
+            self.widgets.get_object("not_found").show()
+            self.widgets.get_object('stop_button').set_sensitive(False)
+            self.widgets.get_object('download_button').set_sensitive(False)
+            self.widgets.get_object('new_button').set_sensitive(False)
+            self.widgets.get_object('entry1').set_text("")
+            self.widgets.get_object('vbox3').hide()
 
 
         else:
@@ -172,17 +174,17 @@ class eltuxusb:
             self.sample_count = el1_math().base256to10(config[30:32])
 
             if self.sample_count == 0:
-                self.widgets.get_widget('download_button').set_sensitive(False)
+                self.widgets.get_object('download_button').set_sensitive(False)
                 status += "zero records, "
             else:
-                self.widgets.get_widget('download_button').set_sensitive(True)
+                self.widgets.get_object('download_button').set_sensitive(True)
 
             if flag_bits[8] == "1":
                 status += "delayed start or logging, "
-                self.widgets.get_widget('stop_button').set_sensitive(True)
+                self.widgets.get_object('stop_button').set_sensitive(True)
             else:
                 status += "stopped, "
-                self.widgets.get_widget('stop_button').set_sensitive(False)
+                self.widgets.get_object('stop_button').set_sensitive(False)
 
             if flag_bits[9] == "1":
                 status += "data NOT downloaded"
@@ -195,33 +197,33 @@ class eltuxusb:
             if flag_bits[11] == "1":
                 status += ", during the last acquisition battery level dropped to a critical level and logging stopped"
 
-            self.widgets.get_widget('label2').set_text(status)
-            self.widgets.get_widget('label15').set_text(full_name)
+            self.widgets.get_object('label2').set_text(status)
+            self.widgets.get_object('label15').set_text(full_name)
 
-            self.widgets.get_widget("found").show()
-            self.widgets.get_widget("not_found").hide()
-            #self.widgets.get_widget('stop_button').set_sensitive(True)
+            self.widgets.get_object("found").show()
+            self.widgets.get_object("not_found").hide()
+            #self.widgets.get_object('stop_button').set_sensitive(True)
 
-            self.widgets.get_widget('new_button').set_sensitive(True)
+            self.widgets.get_object('new_button').set_sensitive(True)
             self.name_recording = self.parse.name_translate(self.dev1.get_config())
 
-            self.widgets.get_widget('entry1').set_text(self.name_recording)
+            self.widgets.get_object('entry1').set_text(self.name_recording)
 
-            self.widgets.get_widget('checkbutton4').set_sensitive(False)
-            self.widgets.get_widget('checkbutton5').set_sensitive(False)
-            self.widgets.get_widget('checkbutton7').set_sensitive(False)
-            self.widgets.get_widget('checkbutton9').set_sensitive(False)
+            self.widgets.get_object('checkbutton4').set_sensitive(False)
+            self.widgets.get_object('checkbutton5').set_sensitive(False)
+            self.widgets.get_object('checkbutton7').set_sensitive(False)
+            self.widgets.get_object('checkbutton9').set_sensitive(False)
 
             if self.model == "elusb2" or self.model == "elusb2lcd":
-                self.widgets.get_widget("hbox13").show()
-                self.widgets.get_widget("hbox14").show()
-                self.widgets.get_widget("hbox15").show()
-                self.widgets.get_widget("hbox16").show()
+                self.widgets.get_object("hbox13").show()
+                self.widgets.get_object("hbox14").show()
+                self.widgets.get_object("hbox15").show()
+                self.widgets.get_object("hbox16").show()
             else:
-                self.widgets.get_widget("hbox13").hide()
-                self.widgets.get_widget("hbox14").hide()
-                self.widgets.get_widget("hbox15").hide()
-                self.widgets.get_widget("hbox16").hide()
+                self.widgets.get_object("hbox13").hide()
+                self.widgets.get_object("hbox14").hide()
+                self.widgets.get_object("hbox15").hide()
+                self.widgets.get_object("hbox16").hide()
 
         return True
 
@@ -231,60 +233,78 @@ class eltuxusb:
         self.minute = time.localtime()[4]
 
 
-        if self.widgets.get_widget('checkbutton1').get_active() == True:
-            self.widgets.get_widget('calendar1').set_sensitive(True)
-            self.widgets.get_widget('spin_button_hour').set_sensitive(True)
-            self.widgets.get_widget('spin_button_min').set_sensitive(True)
-            self.widgets.get_widget('spin_button_hour').set_value(self.hour)
-            self.widgets.get_widget('spin_button_min').set_value(self.minute + 2)
+        if self.widgets.get_object('checkbutton1').get_active() == True:
+            self.widgets.get_object('calendar1').set_sensitive(True)
+            self.widgets.get_object('spin_button_hour').set_sensitive(True)
+            self.widgets.get_object('spin_button_min').set_sensitive(True)
+            self.widgets.get_object('spin_button_hour').set_value(self.hour)
+            self.widgets.get_object('spin_button_min').set_value(self.minute + 2)
 
         else:
-            self.widgets.get_widget('calendar1').set_sensitive(False)
-            self.widgets.get_widget('spin_button_hour').set_sensitive(False)
-            self.widgets.get_widget('spin_button_min').set_sensitive(False)
+            self.widgets.get_object('calendar1').set_sensitive(False)
+            self.widgets.get_object('spin_button_hour').set_sensitive(False)
+            self.widgets.get_object('spin_button_min').set_sensitive(False)
 
 
     def new_recording(self, source=None, event=None):
-        self.widgets.get_widget('vbox3').show()
-        self.widgets.get_widget('combobox1').set_active(2)
+        self.widgets.get_object('vbox3').show()
 
+        self.iface_list_store = gtk.ListStore(gobject.TYPE_STRING)
+        self.iface_list_store.append(["10 sec"])
+        self.iface_list_store.append(["30 sec"])
+        self.iface_list_store.append(["1 min"])
+        self.iface_list_store.append(["30 min"])
+        self.iface_list_store.append(["1 hour"])
+        self.iface_list_store.append(["10 hours"])
+        self.iface_list_store.append(["18 hours"])
+
+        self.widgets.get_object('combobox1').set_model(self.iface_list_store)
+        self.widgets.get_object('combobox1').set_active(0)
+
+        cell = gtk.CellRendererText()
+        self.widgets.get_object('combobox1').pack_start(cell, True)
+        self.widgets.get_object('combobox1').add_attribute(cell, "text", 0)            
+
+        #self.widgets.get_object('liststore1').set_column_types(str)
+        #self.widgets.get_object('liststore1').append(['coucou'])
+        # Problem with liststore
 
     def stop_recording(self, source=None, event=None):
         self.status = self.dev1.stop_recording()
-        self.widgets.get_widget('label2').set_text(self.status)
+        self.widgets.get_object('label2').set_text(self.status)
 
 
     def high_temp_alarm(self, source=None, event=None):
-        if self.widgets.get_widget('checkbutton2').get_active() == True:
-            self.widgets.get_widget('spin_button_high_alarm').set_sensitive(True)
-            self.widgets.get_widget('checkbutton4').set_sensitive(True)
+        if self.widgets.get_object('checkbutton2').get_active() == True:
+            self.widgets.get_object('spin_button_high_alarm').set_sensitive(True)
+            self.widgets.get_object('checkbutton4').set_sensitive(True)
         else:
-            self.widgets.get_widget('spin_button_high_alarm').set_sensitive(False)
-            self.widgets.get_widget('checkbutton4').set_sensitive(False)
+            self.widgets.get_object('spin_button_high_alarm').set_sensitive(False)
+            self.widgets.get_object('checkbutton4').set_sensitive(False)
 
     def low_temp_alarm(self, source=None, event=None):
-        if self.widgets.get_widget('checkbutton3').get_active() == True:
-            self.widgets.get_widget('spin_button_low_alarm').set_sensitive(True)
-            self.widgets.get_widget('checkbutton5').set_sensitive(True)
+        if self.widgets.get_object('checkbutton3').get_active() == True:
+            self.widgets.get_object('spin_button_low_alarm').set_sensitive(True)
+            self.widgets.get_object('checkbutton5').set_sensitive(True)
         else:
-            self.widgets.get_widget('spin_button_low_alarm').set_sensitive(False)
-            self.widgets.get_widget('checkbutton5').set_sensitive(False)
+            self.widgets.get_object('spin_button_low_alarm').set_sensitive(False)
+            self.widgets.get_object('checkbutton5').set_sensitive(False)
 
     def high_hum_alarm(self, source=None, event=None):
-        if self.widgets.get_widget('checkbutton6').get_active() == True:
-            self.widgets.get_widget('spin_button_high_h_alarm').set_sensitive(True)
-            self.widgets.get_widget('checkbutton7').set_sensitive(True)
+        if self.widgets.get_object('checkbutton6').get_active() == True:
+            self.widgets.get_object('spin_button_high_h_alarm').set_sensitive(True)
+            self.widgets.get_object('checkbutton7').set_sensitive(True)
         else:
-            self.widgets.get_widget('spin_button_high_h_alarm').set_sensitive(False)
-            self.widgets.get_widget('checkbutton7').set_sensitive(False)
+            self.widgets.get_object('spin_button_high_h_alarm').set_sensitive(False)
+            self.widgets.get_object('checkbutton7').set_sensitive(False)
 
     def low_hum_alarm(self, source=None, event=None):
-        if self.widgets.get_widget('checkbutton8').get_active() == True:
-            self.widgets.get_widget('spin_button_low_h_alarm').set_sensitive(True)
-            self.widgets.get_widget('checkbutton9').set_sensitive(True)
+        if self.widgets.get_object('checkbutton8').get_active() == True:
+            self.widgets.get_object('spin_button_low_h_alarm').set_sensitive(True)
+            self.widgets.get_object('checkbutton9').set_sensitive(True)
         else:
-            self.widgets.get_widget('spin_button_low_h_alarm').set_sensitive(False)
-            self.widgets.get_widget('checkbutton9').set_sensitive(False)
+            self.widgets.get_object('spin_button_low_h_alarm').set_sensitive(False)
+            self.widgets.get_object('checkbutton9').set_sensitive(False)
 
 
 
@@ -301,7 +321,7 @@ class eltuxusb:
         self.low_humidity_alarm_latch = "0"
         self.flag_bit_32 = ""
         self.flag_bit_33 = ""
-        self.widgets.get_widget('label12').set_text("")
+        self.widgets.get_object('label12').set_text("")
         self.sample_rate = 0
         self.high_alarm_value = 0
         self.low_alarm_value = 0
@@ -320,7 +340,7 @@ class eltuxusb:
                                  "18 hours": 64800 }
 
         # We read the name value, and check if there's no illegal char in it, then we convert it to ascii string
-        self.recording_name = self.widgets.get_widget('entry1').get_text()
+        self.recording_name = self.widgets.get_object('entry1').get_text()
 
         illegal_char = ["%", "&", "*", ",", ".", "/", ":", "<", ">", "?", "|", "(", ")"]
         illegal_char_found = "illegal char found in name: "
@@ -328,22 +348,22 @@ class eltuxusb:
         for entry in illegal_char:
             if self.recording_name.find(entry) != -1:
                 illegal_char_found += entry
-                self.widgets.get_widget('label12').set_text(illegal_char_found)
+                self.widgets.get_object('label12').set_text(illegal_char_found)
                 self.status = 1
 
         self.converted_name = el1_input().convert_name(self.recording_name)
 
         # We read the sample rate value and convert it from base 10 to 256
-        self.sample_rate = self.widgets.get_widget('combobox1').get_active_text()
+        self.sample_rate = self.widgets.get_object('combobox1').get_active_text()
         self.converted_sample_rate = el1_math().base10to256(self.text_to_seconds.get(self.sample_rate), 2)
 
         # We check if the recording is delayed or not and set the start time/date value
-        if self.widgets.get_widget('checkbutton1').get_active() == True:
-            self.start_day = self.widgets.get_widget('calendar1').get_date()[2]
-            self.start_month = self.widgets.get_widget('calendar1').get_date()[1]+1
-            self.start_year = int(str(self.widgets.get_widget('calendar1').get_date()[0])[2:4])
-            self.start_hour = self.widgets.get_widget('spin_button_hour').get_value_as_int()
-            self.start_min = self.widgets.get_widget('spin_button_min').get_value_as_int()
+        if self.widgets.get_object('checkbutton1').get_active() == True:
+            self.start_day = self.widgets.get_object('calendar1').get_date()[2]
+            self.start_month = self.widgets.get_object('calendar1').get_date()[1]+1
+            self.start_year = int(str(self.widgets.get_object('calendar1').get_date()[0])[2:4])
+            self.start_hour = self.widgets.get_object('spin_button_hour').get_value_as_int()
+            self.start_min = self.widgets.get_object('spin_button_min').get_value_as_int()
             self.time_start = int(time.mktime([self.start_year, self.start_month, self.start_day, self.start_hour, self.start_min, self.start_sec, 0, 0, time.localtime()[8]]))
             self.time_sys = int(time.time())
             self.offset_seconds = self.time_start - self.time_sys
@@ -359,25 +379,25 @@ class eltuxusb:
             self.offset_seconds = 0
 
         if self.offset_seconds < 0:
-            self.widgets.get_widget('label12').set_text("Start date is in the past")
+            self.widgets.get_object('label12').set_text("Start date is in the past")
             self.status = 1
 
         # We convert the offset seconds into a readable format for the device
         self.offset_seconds_converted = el1_math().base10to256(self.offset_seconds, 4)
 
         # Check the unit selected (Celsuis=0 or Fahrenheit=1)
-        if self.widgets.get_widget('radiobutton1').get_active():
+        if self.widgets.get_object('radiobutton1').get_active():
             self.unit = 0
         else:
             self.unit = 1
 
         # Check if high alarm is enabled (and alarm latch)
-        if self.widgets.get_widget('checkbutton2').get_active() == True:
+        if self.widgets.get_object('checkbutton2').get_active() == True:
             self.high_alarm = "1"
-            self.high_alarm_value = self.widgets.get_widget('spin_button_high_alarm').get_value()
+            self.high_alarm_value = self.widgets.get_object('spin_button_high_alarm').get_value()
             self.high_alarm_value_converted = el1_math().alarm_convert(self.high_alarm_value, self.unit)
 
-            if self.widgets.get_widget('checkbutton4').get_active() == True:
+            if self.widgets.get_object('checkbutton4').get_active() == True:
                 self.high_alarm_latch = "1"
 
         else:
@@ -386,13 +406,13 @@ class eltuxusb:
             self.high_alarm_value_converted = 0
 
         # Check if low alarm is enabled (and alarm latch)
-        if self.widgets.get_widget('checkbutton3').get_active() == True:
+        if self.widgets.get_object('checkbutton3').get_active() == True:
             self.low_alarm = "1"
-            self.low_alarm_value = self.widgets.get_widget('spin_button_low_alarm').get_value()
+            self.low_alarm_value = self.widgets.get_object('spin_button_low_alarm').get_value()
             self.low_alarm_value_converted = el1_math().alarm_convert(self.low_alarm_value, self.unit)
 
 
-            if self.widgets.get_widget('checkbutton5').get_active() == True:
+            if self.widgets.get_object('checkbutton5').get_active() == True:
                 self.low_alarm_latch = "1"
 
         else:
@@ -401,12 +421,12 @@ class eltuxusb:
 
         if self.model == "elusb2" or self.model == "elusb2lcd":
             # Check if high humidity alarm is enabled (and alarm latch)
-            if self.widgets.get_widget('checkbutton6').get_active() == True:
+            if self.widgets.get_object('checkbutton6').get_active() == True:
                 self.high_humidity_alarm = "1"
-                self.high_humidity_alarm_value = self.widgets.get_widget('spin_button_high_h_alarm').get_value()
+                self.high_humidity_alarm_value = self.widgets.get_object('spin_button_high_h_alarm').get_value()
                 self.high_humidity_alarm_value_converted = el1_math().humidity_alarm_convert(self.high_humidity_alarm_value)
 
-                if self.widgets.get_widget('checkbutton7').get_active() == True:
+                if self.widgets.get_object('checkbutton7').get_active() == True:
                     self.high_humidity_alarm_latch = "1"
 
             else:
@@ -415,12 +435,12 @@ class eltuxusb:
                 self.high_humidity_alarm_value_converted = 0
 
             # Check if low humidity alarm is enabled (and alarm latch)
-            if self.widgets.get_widget('checkbutton8').get_active() == True:
+            if self.widgets.get_object('checkbutton8').get_active() == True:
                 self.low_humidity_alarm = "1"
-                self.low_humidity_alarm_value = self.widgets.get_widget('spin_button_low_h_alarm').get_value()
+                self.low_humidity_alarm_value = self.widgets.get_object('spin_button_low_h_alarm').get_value()
                 self.low_humidity_alarm_value_converted = el1_math().humidity_alarm_convert(self.low_humidity_alarm_value)
 
-                if self.widgets.get_widget('checkbutton9').get_active() == True:
+                if self.widgets.get_object('checkbutton9').get_active() == True:
                     self.low_humidity_alarm_latch = "1"
 
             else:
@@ -464,10 +484,17 @@ class eltuxusb:
             old_buffer = self.dev1.new_buffer.get_original_buffer()
             new_buffer = self.dev1.new_buffer.get_modified_buffer()
 
-            if self.dev1.config_write(new_buffer) == True:
-                self.widgets.get_widget('label12').set_text("Ready, please remove device")
-            else:
-                self.widgets.get_widget('label12').set_text("Something bad happened")
+
+            # 15.05.2012 Temporary do not write anything to the device, just in case...
+            #
+            #if self.dev1.config_write(new_buffer) == True:
+            #    self.widgets.get_object('label12').set_text("Ready, please remove device")
+            #else:
+            #    self.widgets.get_object('label12').set_text("Something bad happened")
+
+            print "model: " , self.model
+            print "old buffer: " , old_buffer
+            print "new buffer: " , new_buffer
 
 if __name__ == '__main__':
     app = eltuxusb().refresh()
