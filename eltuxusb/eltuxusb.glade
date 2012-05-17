@@ -732,7 +732,7 @@
                                 <property name="primary_icon_sensitive">True</property>
                                 <property name="secondary_icon_sensitive">True</property>
                                 <property name="adjustment">adjustment6</property>
-                                <property name="climb_rate">0.5</property>
+                                <property name="climb_rate">1</property>
                                 <property name="digits">1</property>
                               </object>
                               <packing>
@@ -808,7 +808,7 @@
                                 <property name="primary_icon_sensitive">True</property>
                                 <property name="secondary_icon_sensitive">True</property>
                                 <property name="adjustment">adjustment5</property>
-                                <property name="climb_rate">0.5</property>
+                                <property name="climb_rate">1</property>
                                 <property name="digits">1</property>
                               </object>
                               <packing>
