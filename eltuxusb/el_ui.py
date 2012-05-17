@@ -478,10 +478,10 @@ class eltuxusb:
 
             # 15.05.2012 Temporary do not write anything to the device, just in case...
             #
-            #if self.dev1.config_write(new_buffer) == True:
-            #    self.widgets.get_object('label12').set_text("Ready, please remove device")
-            #else:
-            #    self.widgets.get_object('label12').set_text("Something bad happened")
+            if self.dev1.config_write(new_buffer) == True:
+                self.widgets.get_object('label12').set_text("Ready, please remove device")
+            else:
+                self.widgets.get_object('label12').set_text("Something bad happened")
 
             print "model: " , self.model
             print "old buffer: " , old_buffer
