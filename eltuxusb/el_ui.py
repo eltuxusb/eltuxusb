@@ -262,6 +262,8 @@ class eltuxusb:
     def high_temp_alarm(self, source=None, event=None):
         if self.widgets.get_object('checkbutton2').get_active() == True:
             self.widgets.get_object('spin_button_high_alarm').set_sensitive(True)
+            self.widgets.get_object('spin_button_high_alarm').set_range(-39.5, 87.5)
+            self.widgets.get_object('spin_button_high_alarm').set_increments(0.5, 10)
             self.widgets.get_object('checkbutton4').set_sensitive(True)
         else:
             self.widgets.get_object('spin_button_high_alarm').set_sensitive(False)
@@ -270,6 +272,8 @@ class eltuxusb:
     def low_temp_alarm(self, source=None, event=None):
         if self.widgets.get_object('checkbutton3').get_active() == True:
             self.widgets.get_object('spin_button_low_alarm').set_sensitive(True)
+            self.widgets.get_object('spin_button_low_alarm').set_range(-39.5, 87.5)
+            self.widgets.get_object('spin_button_low_alarm').set_increments(0.5, 10)
             self.widgets.get_object('checkbutton5').set_sensitive(True)
         else:
             self.widgets.get_object('spin_button_low_alarm').set_sensitive(False)
@@ -278,6 +282,8 @@ class eltuxusb:
     def high_hum_alarm(self, source=None, event=None):
         if self.widgets.get_object('checkbutton6').get_active() == True:
             self.widgets.get_object('spin_button_high_h_alarm').set_sensitive(True)
+            self.widgets.get_object('spin_button_high_h_alarm').set_range(-39.5, 87.5)
+            self.widgets.get_object('spin_button_high_h_alarm').set_increments(0.5, 10)
             self.widgets.get_object('checkbutton7').set_sensitive(True)
         else:
             self.widgets.get_object('spin_button_high_h_alarm').set_sensitive(False)
@@ -286,12 +292,12 @@ class eltuxusb:
     def low_hum_alarm(self, source=None, event=None):
         if self.widgets.get_object('checkbutton8').get_active() == True:
             self.widgets.get_object('spin_button_low_h_alarm').set_sensitive(True)
+            self.widgets.get_object('spin_button_low_h_alarm').set_range(-39.5, 87.5)
+            self.widgets.get_object('spin_button_low_h_alarm').set_increments(0.5, 10)
             self.widgets.get_object('checkbutton9').set_sensitive(True)
         else:
             self.widgets.get_object('spin_button_low_h_alarm').set_sensitive(False)
             self.widgets.get_object('checkbutton9').set_sensitive(False)
-
-
 
     ### We read the values entred by the user and write them to the device
     def start_recording(self, source=None, event=None):
