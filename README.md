@@ -13,8 +13,11 @@ Support will be extended to other Lascar products if possible (if I actually hav
 
 We need read and write access to the device. To do this as a non-root user, you need to create a udev rule:
 
-    echo 'BUS=="usb", ATTR{idVendor}=="10c4", ATTR{idProduct}=="0002", MODE:="0666"' | sudo tee /etc/udev/rules.d/10-local.rules
+    echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="10c4", ATTR{idProduct}=="0002", MODE:="0666"' | sudo tee /etc/udev/rules.d/10-local.rules
     sudo reboot
+
+Under latests Ubuntu relase the udev rule doesn't work anymore, I have to figure out why but you have to add a "GROUP" key to the rule and add your user into it:
+    SUBSYSTEM=="usb", ATTR{idVendor}=="10c4", ATTR{idProduct}=="0002", MODE:="0666", GROUP:="usbusers"
 
 ### Ubuntu
 
