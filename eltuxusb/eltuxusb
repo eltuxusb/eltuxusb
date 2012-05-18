@@ -3,7 +3,7 @@
 
 #This is the main file to launch the program
 
-import os, datetime, time
+import os, datetime, time, argparse
 
 try:
     # Try the non-PIP case.
@@ -22,12 +22,34 @@ except ImportError:
     import pkgutil
     glade_file = os.path.join(pkgutil.get_loader("eltuxusb").filename, glade_file)
 
-#from time import localtime
+#from time import localtime #CLEAN_ME
 
 pathname = os.path.dirname(sys.argv[0])
 full_path = os.path.abspath(pathname)
 os.chdir(full_path)
 
 if __name__ == '__main__':
-    app = eltuxusb().refresh()
-    gtk.main()
+
+    parser = argparse.ArgumentParser()
+    #parser.add_argument('-d', '--debug', help="print useful informations for the developpers") #CLEAN_ME
+    parser.add_argument('-d', '--debug', action="store_true", help="show useful informations for the developpers")
+    parser.add_argument('-v', '--version', action="store_true", help="show program verison and exit")
+    args = parser.parse_args()
+                    
+    if args.version:
+	
+        print "eltuxusb version 4.0 \n"	
+        sys.exit(0)
+
+    if args.debug:
+        print "Starting eltuxusb in debug mode"
+
+        app = eltuxusb(debug=True).refresh()
+        gtk.main()
+
+
+    else:
+        app = eltuxusb(debug=False).refresh()
+        gtk.main()
+
+

@@ -23,7 +23,8 @@ except ImportError:
     glade_file = os.path.join(pkgutil.get_loader("eltuxusb").filename, glade_file)
 
 class eltuxusb:
-    def __init__(self):
+    def __init__(self, debug):
+        self.debug = debug
         self.dev1 = el1_device()
         self.parse = el1_parse()
         self.file = ""
@@ -47,7 +48,6 @@ class eltuxusb:
                    'on_refresh_button_clicked': self.refresh }
         self.widgets.connect_signals(events)
 
-
     def delete(self, source=None, event=None):
         gtk.main_quit()
 
@@ -68,7 +68,7 @@ class eltuxusb:
         self.about.set_website("https://github.com/eltuxusb")
         self.about.set_website_label("https://github.com/eltuxusb")
         self.about.set_copyright(u'Copyright \u00A9 2009-2012 Romain Aviolat')
-        self.about.set_version("0.3")
+        self.about.set_version("0.4")
         self.about.set_authors(["Romain Aviolat", "David Strauss"])
 
         self.about.run()
@@ -152,42 +152,44 @@ class eltuxusb:
             self.widgets.get_object('entry1').set_text("")
             self.widgets.get_object('vbox3').hide()
 
+            if self.debug:
+                print "Device not found"
 
         else:
-            status = "state: "
+            self.status_msg = "state: "
             self.model = self.dev1.device_model
             flag_bits = self.dev1.get_status()
             config  = self.dev1.get_config()
-            full_name = self.dev1.device_full_name
+            self.full_name = self.dev1.device_full_name
 
             self.sample_count = el1_math().base256to10(config[30:32])
 
             if self.sample_count == 0:
                 self.widgets.get_object('download_button').set_sensitive(False)
-                status += "zero records, "
+                self.status_msg += "zero records, "
             else:
                 self.widgets.get_object('download_button').set_sensitive(True)
 
             if flag_bits[8] == "1":
-                status += "delayed start or logging, "
+                self.status_msg += "delayed start or logging, "
                 self.widgets.get_object('stop_button').set_sensitive(True)
             else:
-                status += "stopped, "
+                self.status_msg += "stopped, "
                 self.widgets.get_object('stop_button').set_sensitive(False)
 
             if flag_bits[9] == "1":
-                status += "data NOT downloaded"
+                self.status_msg += "data NOT downloaded"
             else:
-                status += "data ALREADY downloaded"
+                self.status_msg += "data ALREADY downloaded"
 
             if flag_bits[10] == "1":
-                status += ", during the last acquisition battery level dropped to a low level but logging continued"
+                self.status_msg += ", during the last acquisition battery level dropped to a low level but logging continued"
 
             if flag_bits[11] == "1":
-                status += ", during the last acquisition battery level dropped to a critical level and logging stopped"
+                self.status_msg += ", during the last acquisition battery level dropped to a critical level and logging stopped"
 
-            self.widgets.get_object('label2').set_text(status)
-            self.widgets.get_object('label15').set_text(full_name)
+            self.widgets.get_object('label2').set_text(self.status_msg)
+            self.widgets.get_object('label15').set_text(self.full_name)
 
             self.widgets.get_object("found").show()
             self.widgets.get_object("not_found").hide()
@@ -213,6 +215,11 @@ class eltuxusb:
                 self.widgets.get_object("hbox14").hide()
                 self.widgets.get_object("hbox15").hide()
                 self.widgets.get_object("hbox16").hide()
+            
+            if self.debug:
+                print "Device found: %s (%s)" % (self.full_name, self.model)
+                print self.status_msg               
+
 
         return True
 
@@ -255,8 +262,8 @@ class eltuxusb:
         self.widgets.get_object('combobox1').add_attribute(cell, "text", 0)            
 
     def stop_recording(self, source=None, event=None):
-        self.status = self.dev1.stop_recording()
-        self.widgets.get_object('label2').set_text(self.status)
+        self.status_msg = self.dev1.stop_recording()
+        self.widgets.get_object('label2').set_text(self.status_msg)
 
 
     def high_temp_alarm(self, source=None, event=None):
@@ -483,7 +490,9 @@ class eltuxusb:
             else:
                 self.widgets.get_object('label12').set_text("Something bad happened")
 
-            print "model: " , self.model
-            print "old buffer: " , old_buffer
-            print "new buffer: " , new_buffer
+            if self.debug:
+                print "old buffer: " , old_buffer
+                print "new buffer sent to the device"
+                print "new buffer: " , new_buffer
+
 
