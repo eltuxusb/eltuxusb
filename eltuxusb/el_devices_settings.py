@@ -36,10 +36,10 @@ class el_settings:
                 "7": "elusb4_2",
                 "8": "elusblite",
                 "9": "elusbco",
-                "A": "elusbtc",
-                "B": "elusbco300",
-                "C": "elusb2lcd",
-                "D": "elusb2plus"}
+                "a": "elusbtc",
+                "b": "elusbco300",
+                "c": "elusb2lcd",
+                "d": "elusb2plus"}
 
         # Return the full name (commercial) of the device
         self.device_full_name = {
