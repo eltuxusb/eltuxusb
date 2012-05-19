@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-# This module contains classes to manage EL1USB device
-# This class reads the content of the EL-USB-1 thermometer
+# Those methods read, write and convert data from / to the device
 
 import usb.core
 import usb.util
@@ -10,7 +9,7 @@ import time
 from el_devices_settings import *
 
 class el1_buffer:
-    "Doc ..."
+    "Device configuration buffer"
     def __init__(self):
         self.model = 1
         self.cmd_typ = 0
@@ -39,15 +38,15 @@ class el1_buffer:
         self.roll_count = 0
         self.res1 = 0
         self.res2 = 0
-        # Buffer brut (tableau)
         self.raw_buffer = []
 
 
 class el1_math:
-    "Doc..."
+    "Convert different units from or to the device"
     def __init__(self):
         self.fake = 0
-
+    
+    # Convert alarm to a decimal value
     def alarm_convert(self, value, unit):
         self.value_converted = 0
 
@@ -59,6 +58,7 @@ class el1_math:
 
         return int(self.value_converted)
 
+    # Convert humidity alarm to a decimal value
     def humidity_alarm_convert(self, value):
         self.value_converted = 0
 
@@ -69,18 +69,14 @@ class el1_math:
     # convert the two flag bit into a "binary string"
     def base2tostr(self, base2):
         bin_32 = str(bin(base2)[2:])
-
-        ##DEBUG##
-        #print "base2tostr", base2
-        ##DEBUG##
+        
+        #print "base2tostr", base2 ###DEBUG
 
         while len(bin_32) < 8:
             bin_32 = "0" + bin_32
-
-
         return bin_32
 
-    # This function convert base 256 numbers to base 10
+    # convert base 256 numbers to base 10
     def base256to10(self, base256):
         puissance = len(base256) -1
         base10 = 0
@@ -90,6 +86,7 @@ class el1_math:
             puissance -= 1
         return base10
 
+    # convert base 10 numbers to base 256
     def base10to256(self, base10, nb_bits):
 
         puissance = 1
@@ -113,7 +110,7 @@ class el1_math:
 
 
 class el1_device:
-    "Doc ..."
+    "Search, read, write to the device"
     def __init__(self):
         self.debug_actual_buffer = 0  # Debug output 1 = ON
         self.debug_stopped_buffer = 0 # Debug output 1 = ON
@@ -132,8 +129,6 @@ class el1_device:
         self.flag_bits = ""
         self.backup_buffer = [2, 0, 98, 117, 114, 101, 97, 117, 102, 105, 108, 105, 112, 101, 0, 0, 0, 0, 16, 8, 41, 14, 1, 10, 0, 0, 0, 0, 60, 0, 1, 0, 4, 0, 140, 80, 0, 0, 0, 63, 0, 0, 32, 194, 0, 0, 0, 0, 118, 50, 46, 48, 121, 243, 152, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-
-
     ### "Public" usable functions
     def get_last_err(self):
         return self.last_error
@@ -151,16 +146,13 @@ class el1_device:
         #self.init()
         self.status_read()
 
-        ##DEBUG##
-        #print "FlagBits", self.flag_bits
-        ##DEBUG##
-
+        #print "FlagBits", self.flag_bits ###DEBUG
+        
         return self.flag_bits
 
 
     ### Internal needed functions
-
-    # This function search if the device is connected or not
+    # Search if the device is connected or not
     def device_search(self):
         self.address = usb.core.find(idVendor=0x10c4, idProduct=0x0002)
 
@@ -184,7 +176,7 @@ class el1_device:
         self.device_full_name = self.settings.get_device_full_name(self.device_model)
         self.new_buffer.set_model(self.device_model)
 
-    # Download datas and stop device
+    # Download datas and stop the device
     def download(self):
 
         if self.status_read() != True:
@@ -195,9 +187,7 @@ class el1_device:
             if self.recordings_read() != True:
                 return False
 
-
             self.new_buffer.set_flag_bits([0,0])
-
 
             stop_buffer = self.new_buffer.get_modified_buffer()
 
@@ -211,7 +201,7 @@ class el1_device:
                 return False
 
 
-    # Just stop the recording anbd keep the curent alarm/alarm latch and download state
+    # Stop the recording and keep the curent alarm/alarm latch and download state
     def stop_recording(self):
 
         flag_bits = self.get_status()
@@ -241,7 +231,7 @@ class el1_device:
 
         return self.status
 
-    # restore original backup of the device buffer
+    # Restore original backup of the device buffer (The backup_buffer was taken from my device (elusb1), in case I broke something)
     def restore_backup(self):
         if self.device_search() == False :
             return False
@@ -252,8 +242,7 @@ class el1_device:
         if self.config_write(self.backup_buffer) != True:
             return False
 
-
-    # Reads config
+    # Reads the device configuration
     def config_read(self):
 
         self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x02)
@@ -274,7 +263,7 @@ class el1_device:
             self.read_config = self.read_config.tolist()
             self.new_buffer.set_buffer(self.read_config)
 
-    # This function write the configuration to the device
+    # Write the configuration to the device
     def config_write(self, config_buffer):
 
         if self.new_buffer.verify_buffer() == False:
@@ -297,22 +286,20 @@ class el1_device:
             self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x04)
             return True
 
-    # This method reads the device status
+    # Reads the device status (recording, stopped, ...)
     def status_read(self):
 
         self.status = self.read_config[32:34]
 
-        ##DEBUG##
-        #print "self.status", self.status
-        ##DEBUG##
-
+        #print "self.status", self.status##DEBUG
+        
         self.fb = el1_math()
         self.flag_bits = ""
         for i in self.status:
             self.flag_bits += self.fb.base2tostr(i)[::-1]
         return True
 
-
+    # Read the device recordings
     def recordings_read(self):
 
         # initialise device
