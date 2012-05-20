@@ -266,7 +266,7 @@ class el1_parse:
         if model == "elusb1_17":
             self.elusb1_convert()
 
-        if model == "elusb2":
+        if model == "elusb2" or model == "elusb2lcd":
             self.elusb2_convert()
 
 ###

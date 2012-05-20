@@ -6,6 +6,7 @@ This program only works with the following devices:
 
  * ELUSB-1 
  * ELUSB-2
+ * ELUSB-2-LCD
 
 Support will be extended to other Lascar products if possible (if I actually have another products in my hands).
 
