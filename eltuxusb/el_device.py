@@ -176,7 +176,11 @@ class el1_device:
         self.device_full_name = self.settings.get_device_full_name(self.device_model)
         self.new_buffer.set_model(self.device_model)
 
-    # Download datas and stop the device
+        #print "\ntemp. debug (device ident)    : %s" % self.read_config[0]    #CLEAN_ME
+        #print "temp. debug (device model)    : %s" % self.device_model      #CLEAN_ME
+        #print "temp. debug (device full name): %s \n" % self.device_full_name  #CLEAN_ME
+
+    # Download datas and stop device
     def download(self):
 
         if self.status_read() != True:
