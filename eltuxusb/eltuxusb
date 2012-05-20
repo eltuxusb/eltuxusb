@@ -3,26 +3,14 @@
 
 #This is the main file to launch the program
 
-import os, datetime, time, argparse
+import os, argparse, sys, gtk
 
 try:
     # Try the non-PIP case.
-    from el_ui import * # <- need to clean, dirty 
-    from el_device import * # <- need to clean, dirty
-    from el_input import *  # <- need to clean, dirty
-    from el_parse import *  # <- need to clean, dirty
-    from el_plot import *  # <- need to clean, dirty
+    from el_ui import eltuxusb 
 except ImportError:
     # Maybe it's a PIP-installed package.
-    from eltuxusb.el_ui import * # <- need to clean, dirty
-    from eltuxusb.el_device import * # <- need to clean, dirty
-    from eltuxusb.el_input import *  # <- need to clean, dirty
-    from eltuxusb.el_parse import *  # <- need to clean, dirty
-    from eltuxusb.el_plot import *  # <- need to clean, dirty
-    import pkgutil
-    glade_file = os.path.join(pkgutil.get_loader("eltuxusb").filename, glade_file)
-
-#from time import localtime #CLEAN_ME
+    from eltuxusb.el_ui import eltuxusb
 
 pathname = os.path.dirname(sys.argv[0])
 full_path = os.path.abspath(pathname)
@@ -31,7 +19,6 @@ os.chdir(full_path)
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    #parser.add_argument('-d', '--debug', help="print useful informations for the developpers") #CLEAN_ME
     parser.add_argument('-d', '--debug', action="store_true", help="show useful informations for the developpers")
     parser.add_argument('-v', '--version', action="store_true", help="show program verison and exit")
     args = parser.parse_args()
@@ -46,7 +33,6 @@ if __name__ == '__main__':
 
         app = eltuxusb(debug=True).refresh()
         gtk.main()
-
 
     else:
         app = eltuxusb(debug=False).refresh()

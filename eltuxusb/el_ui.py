@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 # Functions related to the user interface
 
-import os, datetime, time, pygtk, gobject, gtk
+import datetime, time, pygtk, gobject, gtk
 
 pygtk.require("2.0")
 
+glade_file = 'eltuxusb.glade'
+
 try:
     # Try the non-PIP case.
-    from el_ui import * # <- need to clean, dirty 
     from el_device import * # <- need to clean, dirty
     from el_input import *  # <- need to clean, dirty
     from el_parse import *  # <- need to clean, dirty
     from el_plot import *  # <- need to clean, dirty
 except ImportError:
     # Maybe it's a PIP-installed package.
-    from eltuxusb.el_ui import * # <- need to clean, dirty
     from eltuxusb.el_device import * # <- need to clean, dirty
     from eltuxusb.el_input import *  # <- need to clean, dirty
     from eltuxusb.el_parse import *  # <- need to clean, dirty
@@ -31,7 +31,7 @@ class eltuxusb:
         self.name_recording = ""
         self.model = ""
         self.widgets = gtk.Builder()
-        self.widgets.add_from_file('eltuxusb.glade')
+        self.widgets.add_from_file(glade_file)
         events = { 'on_download_button_clicked': self.download,
                    'delete': self.delete,
                    'on_checkbutton1_toggled': self.delay_recording,
