@@ -7,20 +7,10 @@ pygtk.require("2.0")
 
 glade_file = 'eltuxusb.glade'
 
-try:
-    # Try the non-PIP case.
-    from el_device import * # <- need to clean, dirty
-    from el_input import *  # <- need to clean, dirty
-    from el_parse import *  # <- need to clean, dirty
-    from el_plot import *  # <- need to clean, dirty
-except ImportError:
-    # Maybe it's a PIP-installed package.
-    from eltuxusb.el_device import * # <- need to clean, dirty
-    from eltuxusb.el_input import *  # <- need to clean, dirty
-    from eltuxusb.el_parse import *  # <- need to clean, dirty
-    from eltuxusb.el_plot import *  # <- need to clean, dirty
-    import pkgutil
-    glade_file = os.path.join(pkgutil.get_loader("eltuxusb").filename, glade_file)
+from el_device import * # <- need to clean, dirty
+from el_input import *  # <- need to clean, dirty
+from el_parse import *  # <- need to clean, dirty
+from el_plot import *  # <- need to clean, dirty
 
 class eltuxusb:
     def __init__(self, debug):
