@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 # Functions related to the user interface
 
-import datetime, time, pygtk, gobject, gtk
+import datetime, time, pygtk, gobject, gtk, os
 
 pygtk.require("2.0")
-
-glade_file = 'eltuxusb.glade'
 
 from el_device import * # <- need to clean, dirty
 from el_input import *  # <- need to clean, dirty
 from el_parse import *  # <- need to clean, dirty
 from el_plot import *  # <- need to clean, dirty
+
+# Auto-determine the location of the Glade file.
+glade_file = os.path.join(os.path.realpath(__file__), 'eltuxusb.glade')
 
 class eltuxusb:
     def __init__(self, debug):
