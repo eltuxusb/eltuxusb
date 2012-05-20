@@ -11,7 +11,8 @@ from el_parse import *  # <- need to clean, dirty
 from el_plot import *  # <- need to clean, dirty
 
 # Auto-determine the location of the Glade file.
-glade_file = os.path.join(os.path.realpath(__file__), 'eltuxusb.glade')
+my_directory = os.path.dirname(os.path.realpath(__file__))
+glade_file = os.path.join(my_directory, 'eltuxusb.glade')
 
 class eltuxusb:
     def __init__(self, debug):
