@@ -86,7 +86,7 @@ class el_settings:
                 "elusbco": "not defined yet",
                 "elusbtc": "not defined yet",
                 "elusbco300": "not defined yet",
-                "elusb2lcd": "not defined yet",
+                "elusb2lcd": "elusb2_convert",
                 "elusb2plus": "not defined yet"}
 
     ######
