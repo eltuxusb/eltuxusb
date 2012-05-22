@@ -150,7 +150,7 @@ class eltuxusb:
             self.widgets.get_object('vbox3').hide()
 
             if self.debug:
-                print "Device not found"
+                print "#DEBUG# DEVICE NOT FOUND"
         else:
             self.status_msg = "state: "
             self.model = self.dev1.device_model
