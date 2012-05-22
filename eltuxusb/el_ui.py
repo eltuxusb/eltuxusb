@@ -17,7 +17,10 @@ glade_file = os.path.join(my_directory, 'eltuxusb.glade')
 class eltuxusb:
     def __init__(self, debug):
         self.debug = debug
-        self.dev1 = el1_device()
+        if self.debug:
+            self.dev1 = el1_device(debug=True)
+        else:
+            self.dev1 = el1_device(debug=False)
         self.parse = el1_parse()
         self.file = ""
         self.name_recording = ""
@@ -127,9 +130,11 @@ class eltuxusb:
 
             else:
                 self.parse.data_translate(self.dev1.get_data(), self.dev1.get_config(), self.dev1.get_status(), self.result, self.model)
-                # print "afiche status", self.dev1.get_status() ##DEBUG##
-                self.widgets.get_object('label2').set_text('Downloaded and stopped')
-                self.widgets.get_object('stop_button').set_sensitive(False)
+                if self.debug:
+                    self.widgets.get_object('label2').set_text('Downloaded but not stopped')                
+                else:
+                    self.widgets.get_object('label2').set_text('Downloaded and stopped')
+                    self.widgets.get_object('stop_button').set_sensitive(False)
 
 
     def refresh(self, source=None, event=None):
@@ -146,7 +151,6 @@ class eltuxusb:
 
             if self.debug:
                 print "Device not found"
-
         else:
             self.status_msg = "state: "
             self.model = self.dev1.device_model
@@ -209,12 +213,13 @@ class eltuxusb:
                 self.widgets.get_object("hbox16").hide()
             
             if self.debug:
-                print "Device found: %s (%s)" % (self.full_name, self.model)
-                print self.status_msg               
+                print "#DEBUG# DEVICE STATE: %s" % self.status_msg               
 
+        if self.debug:
+            self.widgets.get_object('label1').set_text("eltuxusb device manager (DEBUG MODE)")
 
         return True
-
+        
 
     def delay_recording(self, source=None, event=None):
         self.hour = time.localtime()[3]
@@ -473,18 +478,15 @@ class eltuxusb:
 
             old_buffer = self.dev1.new_buffer.get_original_buffer()
             new_buffer = self.dev1.new_buffer.get_modified_buffer()
-
-
-            # 15.05.2012 Temporary do not write anything to the device, just in case...
-            #
-            if self.dev1.config_write(new_buffer) == True:
-                self.widgets.get_object('label12').set_text("Ready, please remove device")
-            else:
-                self.widgets.get_object('label12').set_text("Something bad happened")
-
+            
             if self.debug:
-                print "old buffer: " , old_buffer
-                print "new buffer sent to the device"
-                print "new buffer: " , new_buffer
+                self.widgets.get_object('label12').set_text("Debug mode, nothing sent to the device, see console")
+                print "#DEBUG# NEW CONFIG  : %s" % new_buffer          
+            
+            else:
 
+                if self.dev1.config_write(new_buffer) == True:
+                    self.widgets.get_object('label12').set_text("Ready, please remove device")
+                else:
+                    self.widgets.get_object('label12').set_text("Something bad happened")
 

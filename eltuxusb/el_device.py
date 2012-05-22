@@ -111,10 +111,8 @@ class el1_math:
 
 class el1_device:
     "Search, read, write to the device"
-    def __init__(self):
-        self.debug_actual_buffer = 0  # Debug output 1 = ON
-        self.debug_stopped_buffer = 0 # Debug output 1 = ON
-        self.debug_recorded_data = 0  # Debug output 1 = ON
+    def __init__(self, debug):
+        self.debug = debug
         self.device_model = ""
         self.device_full_name = ""
         self.last_error = ""
@@ -176,10 +174,10 @@ class el1_device:
         self.device_full_name = self.settings.get_device_full_name(self.device_model)
         self.new_buffer.set_model(self.device_model)
 
-        print "temp. debug (fullconfig)    : %s" % self.read_config    #CLEAN_ME
-        print "temp. debug (device ident)    : %s" % self.read_config[0]    #CLEAN_ME
-        print "temp. debug (device model)    : %s" % self.device_model      #CLEAN_ME
-        print "temp. debug (device full name): %s \n" % self.device_full_name  #CLEAN_ME
+        if self.debug:
+            print "#DEBUG# DEVICE IDENT: %s" % self.read_config[0]
+            print "#DEBUG# DEVICE MODEL: %s" % self.device_model
+            print "#DEBUG# DEVICE NAME : %s" % self.device_full_name
 
     # Download datas and stop device
     def download(self):
@@ -196,15 +194,12 @@ class el1_device:
 
             stop_buffer = self.new_buffer.get_modified_buffer()
 
-            if self.debug_actual_buffer == 1:
-                print "actual_buffer: ", self.read_config
+            if self.debug:
+                print "#DEBUG# STOP BUFFER: %s" % stop_buffer
 
-            if self.debug_stopped_buffer == 1:
-                print "stopped buffer: ", stop_buffer
-
-            if self.config_write(stop_buffer) != True:
-                return False
-
+            else:
+                if self.config_write(stop_buffer) != True:
+                    return False
 
     # Stop the recording and keep the curent alarm/alarm latch and download state
     def stop_recording(self):
@@ -220,19 +215,16 @@ class el1_device:
         else:
 
             self.config_read()
-
             self.new_buffer.set_flag_bits([int(self.flag_bit_32, 2), int(self.flag_bit_33, 2)])
             stop_buffer = self.new_buffer.get_modified_buffer()
+            
+            if self.debug:
+                print "#DEBUG# stop buffer  : %s" % stop_buffer
+                self.status = "DEBUG: not stopped and NOT downloaded"
 
-            self.config_write(stop_buffer)
-
-            if self.debug_actual_buffer == 1:
-                print "actual_buffer: ", self.read_config
-
-            if self.debug_stopped_buffer == 1:
-                print "stopped buffer: ", stop_buffer
-
-            self.status = "stopped but NOT downloaded"
+            else:
+                self.config_write(stop_buffer)
+                self.status = "stopped but NOT downloaded"
 
         return self.status
 
@@ -267,6 +259,9 @@ class el1_device:
         else:
             self.read_config = self.read_config.tolist()
             self.new_buffer.set_buffer(self.read_config)
+            
+            if self.debug:
+                print "#DEBUG# ORIGINAL BUFFER: %s" % self.read_config
 
     # Write the configuration to the device
     def config_write(self, config_buffer):
@@ -336,7 +331,7 @@ class el1_device:
         for i in range(self.device_nb_packets):
             self.read_block.extend(self.address.read(0x82, 0x1000, 0, 1000))
 
-        if self.debug_recorded_data == 1:
-            print self.read_block[0:1000]
+        if self.debug:
+            print "#DEBUG# RECORDED DATAS: %s" % self.read_block[0:1000]
 
         return True

@@ -19,7 +19,7 @@ os.chdir(full_path)
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--debug', action="store_true", help="show useful informations for the developpers")
+    parser.add_argument('-d', '--debug', action="store_true", help="show useful informations for the developpers (do not write anything to the device)")
     parser.add_argument('-v', '--version', action="store_true", help="show program verison and exit")
     args = parser.parse_args()
                     
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if args.debug:
-        print "Starting eltuxusb in debug mode"
+        print "#DEBUG# Starting eltuxusb in debug mode (nothing will be written on the device)\n"
 
         app = eltuxusb(debug=True).refresh()
         gtk.main()
