@@ -8,9 +8,11 @@ import os, argparse, sys, gtk
 try:
     # Try the non-PIP case.
     from el_ui import eltuxusb 
+    from el_cmd import el_cmd
 except ImportError:
     # Maybe it's a PIP-installed package.
     from eltuxusb.el_ui import eltuxusb
+    from eltuxusb.el_cmd import el_cmd
 
 pathname = os.path.dirname(sys.argv[0])
 full_path = os.path.abspath(pathname)
@@ -20,22 +22,23 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--debug', action="store_true", help="show useful informations for the developpers (do not write anything to the device)")
-    parser.add_argument('-v', '--version', action="store_true", help="show program verison and exit")
+    parser.add_argument('-D', '--download', help="download the recordings to a file, ex: /home/user/out.txt")
+    parser.add_argument('-v', '--version', action="store_true", help="show program version and exit")
     args = parser.parse_args()
                     
     if args.version:
-	
         print "eltuxusb version 4.0 \n"	
         sys.exit(0)
 
     if args.debug:
-        print "#DEBUG# Starting eltuxusb in debug mode (nothing will be written on the device)\n"
+        print "#DEBUG# Starting eltuxusb in debug mode (nothing will be written on the device)"
 
-        app = eltuxusb(debug=True).refresh()
-        gtk.main()
+    if args.download:
+        app = el_cmd(path=args.download, debug=args.debug)
+        app.download()
 
     else:
-        app = eltuxusb(debug=False).refresh()
+        app = eltuxusb(debug=args.debug).refresh()
         gtk.main()
 
 

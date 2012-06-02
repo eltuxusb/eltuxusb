@@ -109,6 +109,7 @@ class eltuxusb:
 
         if response == gtk.RESPONSE_OK:
             self.result = chooser.get_filename()
+            
 
         else:
             chooser.destroy()
@@ -125,16 +126,16 @@ class eltuxusb:
             if self.dev1.download() == False:
                 self.widgets.get_object('label2').set_text(self.dev1.get_last_err())
 
-                # print "afiche status", self.dev1.get_status()
-
-
             else:
-                self.parse.data_translate(self.dev1.get_data(), self.dev1.get_config(), self.dev1.get_status(), self.result, self.model)
-                if self.debug:
-                    self.widgets.get_object('label2').set_text('Downloaded but not stopped')                
+                if self.dev1.clear_flag_bits() == False:
+                    self.widgets.get_object('label2').set_text(self.dev1.get_last_err())
                 else:
-                    self.widgets.get_object('label2').set_text('Downloaded and stopped')
-                    self.widgets.get_object('stop_button').set_sensitive(False)
+                    self.parse.data_translate(self.dev1.get_data(), self.dev1.get_config(), self.dev1.get_status(), self.result, self.model)
+                    if self.debug:
+                        self.widgets.get_object('label2').set_text('Downloaded but not stopped')                
+                    else:
+                        self.widgets.get_object('label2').set_text('Downloaded and stopped')
+                        self.widgets.get_object('stop_button').set_sensitive(False)
 
 
     def refresh(self, source=None, event=None):

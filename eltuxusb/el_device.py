@@ -179,7 +179,7 @@ class el1_device:
             print "#DEBUG# DEVICE MODEL: %s" % self.device_model
             print "#DEBUG# DEVICE NAME : %s" % self.device_full_name
 
-    # Download datas and stop device
+    # Download datas
     def download(self):
 
         if self.status_read() != True:
@@ -189,17 +189,22 @@ class el1_device:
         else:
             if self.recordings_read() != True:
                 return False
-
-            self.new_buffer.set_flag_bits([0,0])
-
-            stop_buffer = self.new_buffer.get_modified_buffer()
-
-            if self.debug:
-                print "#DEBUG# STOP BUFFER: %s" % stop_buffer
-
             else:
-                if self.config_write(stop_buffer) != True:
-                    return False
+                return True
+
+    # Clear flag bits, (download state / alarms)
+    def clear_flag_bits(self):
+
+        self.new_buffer.set_flag_bits([0,0])
+
+        stop_buffer = self.new_buffer.get_modified_buffer()
+
+        if self.debug:
+            print "#DEBUG# STOP BUFFER: %s" % stop_buffer
+
+        else:
+            if self.config_write(stop_buffer) != True:
+                return False
 
     # Stop the recording and keep the curent alarm/alarm latch and download state
     def stop_recording(self):
@@ -220,11 +225,11 @@ class el1_device:
             
             if self.debug:
                 print "#DEBUG# stop buffer  : %s" % stop_buffer
-                self.status = "DEBUG: not stopped and NOT downloaded"
+                self.status = "#DEBUG# not stopped and NOT downloaded"
 
             else:
                 self.config_write(stop_buffer)
-                self.status = "stopped but NOT downloaded"
+                self.status = "stopped"
 
         return self.status
 

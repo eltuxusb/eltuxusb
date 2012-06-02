@@ -177,7 +177,7 @@ class el1_parse:
                 line_content += "\n"
 
                 self.first_rec_time = self.first_rec_time + datetime.timedelta(0,self.intervale_rec)
-
+                
                 self.file_dest.write(line_content),
                 line_position += 1
 
