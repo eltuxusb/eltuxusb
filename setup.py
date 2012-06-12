@@ -24,5 +24,6 @@ setup(name='eltuxusb',
       install_requires = ['matplotlib', 'pyusb'],
       packages = ['eltuxusb'],
       scripts = ['eltuxusb/eltuxusb'],
+      data_files = [('/etc/udev/rules.d/', ['10-local.rules'])],
       package_data = {'eltuxusb': ['*.glade', '*.png']}
       )
