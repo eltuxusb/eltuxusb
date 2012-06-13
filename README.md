@@ -42,4 +42,10 @@ Run the program, which PIP should have installed in your $PATH:
 
 To remove the program:
 
+### Ubuntu
+
     sudo pip uninstall eltuxusb
+    
+### Fedora
+    
+    sudo pip-python uninstall eltuxusb
