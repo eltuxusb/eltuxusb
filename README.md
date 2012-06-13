@@ -37,3 +37,9 @@ With latest udev release the device must also be part of a group, we used here t
 Run the program, which PIP should have installed in your $PATH:
 
     eltuxusb
+    
+## Remove
+
+To remove the program:
+
+    sudo pip uninstall eltuxusb
