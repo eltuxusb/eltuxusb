@@ -3,7 +3,9 @@
 
 #This is the main file to launch the program
 
-import os, argparse, sys, gtk
+import os, argparse, sys
+
+from gi.repository import Gtk
 
 try:
     # Try the non-PIP case.
@@ -39,6 +41,6 @@ if __name__ == '__main__':
 
     else:
         app = eltuxusb(debug=args.debug).refresh()
-        gtk.main()
+        Gtk.main()
 
 

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Functions related to the user interface
 
-import datetime, time, pygtk, gobject, gtk, os
+import datetime, time, gobject, os
+from gi.repository import Gtk
 
-pygtk.require("2.0")
+#pygtk.require("2.0")
 
 from el_device import * # <- need to clean, dirty
 from el_input import *  # <- need to clean, dirty
@@ -25,7 +26,7 @@ class eltuxusb:
         self.file = ""
         self.name_recording = ""
         self.model = ""
-        self.widgets = gtk.Builder()
+        self.widgets = Gtk.Builder()
         self.widgets.add_from_file(glade_file)
         events = { 'on_download_button_clicked': self.download,
                    'delete': self.delete,
@@ -44,7 +45,7 @@ class eltuxusb:
         self.widgets.connect_signals(events)
 
     def delete(self, source=None, event=None):
-        gtk.main_quit()
+        Gtk.main_quit()
 
     def switch_unit(self, source=None, event=None):
 
@@ -56,8 +57,8 @@ class eltuxusb:
             self.widgets.get_object('label8').set_text("high temp. alarm: (°F)")
 
     def about_windows(self, source=None, event=None):
-        self.about = gtk.AboutDialog()
-        self.about.set_position(gtk.WIN_POS_CENTER)
+        self.about = Gtk.AboutDialog()
+        #self.about.set_position(Gtk.WIN_POS_CENTER)
         self.about.set_name("ELTuxUSB")
         self.about.set_program_name("ELTuxUSB")
         self.about.set_website("https://github.com/eltuxusb")
@@ -70,51 +71,33 @@ class eltuxusb:
         self.about.destroy()
 
     def generate_graph(self, source=None, event=None):
-
-        #self.dialog = "sgezg"
         # Setup the filechooserdialog
-        chooser = gtk.FileChooserDialog(("select a previously saved recording"),
-            None,
-            gtk.FILE_CHOOSER_ACTION_SAVE,
-            buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE,
-                        gtk.RESPONSE_OK))
+        chooser = Gtk.FileChooserDialog(("select a previously saved recording"),
+            Gtk.FileChooserAction.OPEN,
+            buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
 
-        # Run the dialog
         response = chooser.run()
-
-        if response == gtk.RESPONSE_OK:
+        
+        if response == Gtk.ResponseType.OK:
             self.result = chooser.get_filename()
             graph = plot()
             graph.parse_file(self.result)
             graph.render_plot()
 
-        else:
-            chooser.destroy()
-            return
-
         chooser.destroy()
 
     def download(self, source=None, event=None):
-
-        #self.dialog = "sgezg"
         # Setup the filechooserdialog
-        chooser = gtk.FileChooserDialog(("please, choose an output file"),
+        chooser = Gtk.FileChooserDialog(("please, choose an output file"),
             None,
-            gtk.FILE_CHOOSER_ACTION_SAVE,
-            buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE,
-                        gtk.RESPONSE_OK))
+            Gtk.FileChooserAction.SAVE,
+            buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
 
-        # Run the dialog
         response = chooser.run()
 
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             self.result = chooser.get_filename()
             
-
-        else:
-            chooser.destroy()
-            return
-
         chooser.destroy()
 
         if self.dev1.init() == False:
@@ -243,21 +226,8 @@ class eltuxusb:
 
 
     def new_recording(self, source=None, event=None):
-        self.list = ["10 sec", "30 sec", "1 min", "30 min", "1 hour", "10 hours", "18 hours"]
         self.widgets.get_object('vbox3').show()
-
-        self.iface_list_store = gtk.ListStore(gobject.TYPE_STRING)
-        
-        for i in self.list:
-            self.iface_list_store.append([i])
-
-        self.widgets.get_object('combobox1').set_model(self.iface_list_store)
-        self.widgets.get_object('combobox1').set_active(0)
-
-        cell = gtk.CellRendererText()
-        self.widgets.get_object('combobox1').pack_start(cell, True)
-
-        self.widgets.get_object('combobox1').add_attribute(cell, "text", 0)            
+          
 
     def stop_recording(self, source=None, event=None):
         self.status_msg = self.dev1.stop_recording()
@@ -326,32 +296,23 @@ class eltuxusb:
         self.unit = 0
         self.start_sec = 0
         self.status = 0
-        self.text_to_seconds = {
-                                 "10 sec": 10,
-                                 "30 sec": 30,
-                                 "1 min": 60,
-                                 "30 min": 1800,
-                                 "1 hour": 3600,
-                                 "10 hours": 36000,
-                                 "18 hours": 64800 }
 
-        # We read the name value, and check if there's no illegal char in it, then we convert it to ascii string
+        # Read the entered recording name, and check if there's no illegal char in it, then we convert it to ascii string
         self.recording_name = self.widgets.get_object('entry1').get_text()
+        self.illegal_char = el1_math().illegal_char(self.recording_name)
 
-        illegal_char = ["%", "&", "*", ",", ".", "/", ":", "<", ">", "?", "|", "(", ")"]
-        illegal_char_found = "illegal char found in name: "
-
-        for entry in illegal_char:
-            if self.recording_name.find(entry) != -1:
-                illegal_char_found += entry
-                self.widgets.get_object('label12').set_text(illegal_char_found)
-                self.status = 1
-
+        if self.illegal_char:
+            self.status = 1
+            self.widgets.get_object('label12').set_text(self.illegal_char)
+                
         self.converted_name = el1_input().convert_name(self.recording_name)
 
-        # We read the sample rate value and convert it from base 10 to 256
-        self.sample_rate = self.widgets.get_object('combobox1').get_active_text()
-        self.converted_sample_rate = el1_math().base10to256(self.text_to_seconds.get(self.sample_rate), 2)
+        # Read the selected sample rate (from the combobox) 
+        self.combobox_item = self.widgets.get_object('combobox1').get_active()
+        self.sample_rate = self.widgets.get_object('combobox1').get_model()[self.combobox_item][1]
+           
+        # And convert it from base 10 to 256
+        self.converted_sample_rate = el1_math().base10to256(self.sample_rate, 2)
 
         # We check if the recording is delayed or not and set the start time/date value
         if self.widgets.get_object('checkbutton1').get_active() == True:

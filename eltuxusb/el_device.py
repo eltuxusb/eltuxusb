@@ -108,6 +108,20 @@ class el1_math:
 
         return base256[::-1]
 
+    # check if illegal characters were put in the recording name
+    def illegal_char(self, name):
+        found = 0
+        illegal_char = ["%", "&", "*", ",", ".", "/", ":", "<", ">", "?", "|", "(", ")"]
+        illegal_char_found = "illegal char found in name: "
+
+        for entry in illegal_char:
+            if name.find(entry) != -1:
+                illegal_char_found += entry
+                found = 1
+        if found == 1:
+            return illegal_char_found
+        else:
+            return False               
 
 class el1_device:
     "Search, read, write to the device"
