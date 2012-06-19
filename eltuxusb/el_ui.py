@@ -316,8 +316,8 @@ class eltuxusb:
 
         # We check if the recording is delayed or not and set the start time/date value
         if self.widgets.get_object('checkbutton1').get_active() == True:
-            self.start_day = self.widgets.get_object('calendar1').get_date()[2]
-            self.start_month = self.widgets.get_object('calendar1').get_date()[1]+1
+            self.start_day = int(self.widgets.get_object('calendar1').get_date()[2])
+            self.start_month = int(self.widgets.get_object('calendar1').get_date()[1]+1)
             self.start_year = int(str(self.widgets.get_object('calendar1').get_date()[0])[2:4])
             self.start_hour = self.widgets.get_object('spin_button_hour').get_value_as_int()
             self.start_min = self.widgets.get_object('spin_button_min').get_value_as_int()
@@ -351,7 +351,7 @@ class eltuxusb:
         # Check if high alarm is enabled (and alarm latch)
         if self.widgets.get_object('checkbutton2').get_active() == True:
             self.high_alarm = "1"
-            self.high_alarm_value = self.widgets.get_object('spin_button_high_alarm').get_value()
+            self.high_alarm_value = self.widgets.get_object('spin_button_high_alarm').get_value_as_int()
             self.high_alarm_value_converted = el1_math().alarm_convert(self.high_alarm_value, self.unit)
 
             if self.widgets.get_object('checkbutton4').get_active() == True:
@@ -365,7 +365,7 @@ class eltuxusb:
         # Check if low alarm is enabled (and alarm latch)
         if self.widgets.get_object('checkbutton3').get_active() == True:
             self.low_alarm = "1"
-            self.low_alarm_value = self.widgets.get_object('spin_button_low_alarm').get_value()
+            self.low_alarm_value = self.widgets.get_object('spin_button_low_alarm').get_value_as_int()
             self.low_alarm_value_converted = el1_math().alarm_convert(self.low_alarm_value, self.unit)
 
 
@@ -380,7 +380,7 @@ class eltuxusb:
             # Check if high humidity alarm is enabled (and alarm latch)
             if self.widgets.get_object('checkbutton6').get_active() == True:
                 self.high_humidity_alarm = "1"
-                self.high_humidity_alarm_value = self.widgets.get_object('spin_button_high_h_alarm').get_value()
+                self.high_humidity_alarm_value = self.widgets.get_object('spin_button_high_h_alarm').get_value_as_int()
                 self.high_humidity_alarm_value_converted = el1_math().humidity_alarm_convert(self.high_humidity_alarm_value)
 
                 if self.widgets.get_object('checkbutton7').get_active() == True:
@@ -394,7 +394,7 @@ class eltuxusb:
             # Check if low humidity alarm is enabled (and alarm latch)
             if self.widgets.get_object('checkbutton8').get_active() == True:
                 self.low_humidity_alarm = "1"
-                self.low_humidity_alarm_value = self.widgets.get_object('spin_button_low_h_alarm').get_value()
+                self.low_humidity_alarm_value = self.widgets.get_object('spin_button_low_h_alarm').get_value_as_int()
                 self.low_humidity_alarm_value_converted = el1_math().humidity_alarm_convert(self.low_humidity_alarm_value)
 
                 if self.widgets.get_object('checkbutton9').get_active() == True:

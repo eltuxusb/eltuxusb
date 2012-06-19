@@ -554,6 +554,7 @@
                                 <property name="secondary_icon_activatable">False</property>
                                 <property name="adjustment">adjustment1</property>
                                 <property name="climb_rate">1</property>
+                                <property name="numeric">True</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -583,6 +584,7 @@
                                 <property name="secondary_icon_activatable">False</property>
                                 <property name="adjustment">adjustment2</property>
                                 <property name="climb_rate">1</property>
+                                <property name="numeric">True</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
