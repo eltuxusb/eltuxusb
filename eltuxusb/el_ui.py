@@ -150,6 +150,11 @@ class eltuxusb:
             else:
                 self.widgets.get_object('download_button').set_sensitive(True)
 
+            self.display_recordings = str(self.sample_count) + " recordings"
+            self.widgets.get_object('label21').set_text(self.display_recordings)
+            self.widgets.get_object('label21').show()
+            self.widgets.get_object('recordings').show()
+
             if flag_bits[8] == "1":
                 self.status_msg += "delayed start or logging, "
                 self.widgets.get_object('stop_button').set_sensitive(True)
@@ -197,7 +202,8 @@ class eltuxusb:
                 self.widgets.get_object("hbox16").hide()
             
             if self.debug:
-                print "#DEBUG# DEVICE STATE: %s" % self.status_msg               
+                print "#DEBUG# DEVICE STATE: %s" % self.status_msg  
+                print "#DEBUG# RECORDING COUNT: %d" % self.sample_count             
 
         if self.debug:
             self.widgets.get_object('label1').set_text("eltuxusb device manager (DEBUG MODE)")
@@ -211,6 +217,7 @@ class eltuxusb:
 
 
         if self.widgets.get_object('checkbutton1').get_active() == True:
+            self.widgets.get_object('calendar1').show()
             self.widgets.get_object('calendar1').set_sensitive(True)
             self.widgets.get_object('spin_button_hour').set_sensitive(True)
             self.widgets.get_object('spin_button_hour').set_value(self.hour)
@@ -220,6 +227,7 @@ class eltuxusb:
             self.widgets.get_object('spin_button_min').set_range(0, 59)
 
         else:
+            self.widgets.get_object('calendar1').hide()
             self.widgets.get_object('calendar1').set_sensitive(False)
             self.widgets.get_object('spin_button_hour').set_sensitive(False)
             self.widgets.get_object('spin_button_min').set_sensitive(False)
@@ -227,7 +235,7 @@ class eltuxusb:
 
     def new_recording(self, source=None, event=None):
         self.widgets.get_object('vbox3').show()
-          
+        self.widgets.get_object('calendar1').hide()
 
     def stop_recording(self, source=None, event=None):
         self.status_msg = self.dev1.stop_recording()

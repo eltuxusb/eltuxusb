@@ -266,10 +266,14 @@ class el1_device:
         # requesting device configuration
         msg = [0x00, 0xFF, 0xFF]
         sent_bytes = self.address.write(0x02, msg, 0, 100)
-
         # reading device configuration
         read_device = self.address.read(0x82, 0x03, 0, 1000)
-        self.size = read_device[1] + 1
+
+        if read_device[2] == 1:
+            self.size = 257
+        else:
+            self.size = read_device[1] + 1
+
         self.read_config = self.address.read(0x82, self.size, 0, 1000)
         #print self.read_config
         if len(self.read_config) == 0:
@@ -280,6 +284,7 @@ class el1_device:
             self.new_buffer.set_buffer(self.read_config)
             
             if self.debug:
+                print "#DEBUG# BUFFER SIZE: %s" % len(self.read_config)
                 print "#DEBUG# ORIGINAL BUFFER: %s" % self.read_config
 
     # Write the configuration to the device
