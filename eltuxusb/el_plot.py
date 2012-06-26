@@ -84,7 +84,8 @@ class plot():
             self._minute      = re.search(':..:',ligne).group()[1:3]
             self._second      = re.search(':..,',ligne).group()[1:3]
             self._temperature = re.split(",", ligne)[2]
-            self.date.append(datetime.datetime(int(self._year), int(self._month), int(self._day), int(self._hour), int(self._minute)))
+            self.date.append(datetime.datetime(int(self._year), int(self._month), int(self._day), int(self._hour), int(self._minute), int(self._second)))
+
             self.temp.append(self._temperature)
 
             if self.deviceModel == "elusb2" or self.deviceModel == "elusb2lcd":
