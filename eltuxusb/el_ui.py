@@ -155,55 +155,65 @@ class eltuxusb:
             self.widgets.get_object('label21').show()
             self.widgets.get_object('recordings').show()
 
-            if flag_bits[8] == "1":
-                self.status_msg += "delayed start or logging, "
-                self.widgets.get_object('stop_button').set_sensitive(True)
-            else:
-                self.status_msg += "stopped, "
+
+            if self.model != "elusb2" and self.model != "elusb1_17":
+                self.widgets.get_object('download_button').set_sensitive(False)
                 self.widgets.get_object('stop_button').set_sensitive(False)
+                self.widgets.get_object('new_button').set_sensitive(False)
+                self.widgets.get_object('label15').set_text(self.full_name)
+                self.widgets.get_object('label2').set_text("DEVICE NOT SUPPORTED YET")
 
-            if flag_bits[9] == "1":
-                self.status_msg += "data NOT downloaded"
             else:
-                self.status_msg += "data ALREADY downloaded"
 
-            if flag_bits[10] == "1":
-                self.status_msg += ", during the last acquisition battery level dropped to a low level but logging continued"
+                if flag_bits[8] == "1":
+                    self.status_msg += "delayed start or logging, "
+                    self.widgets.get_object('stop_button').set_sensitive(True)
+                else:
+                    self.status_msg += "stopped, "
+                    self.widgets.get_object('stop_button').set_sensitive(False)
 
-            if flag_bits[11] == "1":
-                self.status_msg += ", during the last acquisition battery level dropped to a critical level and logging stopped"
+                if flag_bits[9] == "1":
+                    self.status_msg += "data NOT downloaded"
+                else:
+                    self.status_msg += "data ALREADY downloaded"
 
-            self.widgets.get_object('label2').set_text(self.status_msg)
-            self.widgets.get_object('label15').set_text(self.full_name)
+                if flag_bits[10] == "1":
+                    self.status_msg += ", during the last acquisition battery level dropped to a low level but logging continued"
 
-            self.widgets.get_object("found").show()
-            self.widgets.get_object("not_found").hide()
-            #self.widgets.get_object('stop_button').set_sensitive(True)
+                if flag_bits[11] == "1":
+                    self.status_msg += ", during the last acquisition battery level dropped to a critical level and logging stopped"
 
-            self.widgets.get_object('new_button').set_sensitive(True)
-            self.name_recording = self.parse.name_translate(self.dev1.get_config())
+                self.widgets.get_object('label2').set_text(self.status_msg)
+                self.widgets.get_object('label15').set_text(self.full_name)
 
-            self.widgets.get_object('entry1').set_text(self.name_recording)
+                self.widgets.get_object("found").show()
+                self.widgets.get_object("not_found").hide()
+                #self.widgets.get_object('stop_button').set_sensitive(True)
 
-            self.widgets.get_object('checkbutton4').set_sensitive(False)
-            self.widgets.get_object('checkbutton5').set_sensitive(False)
-            self.widgets.get_object('checkbutton7').set_sensitive(False)
-            self.widgets.get_object('checkbutton9').set_sensitive(False)
+                self.widgets.get_object('new_button').set_sensitive(True)
+                self.name_recording = self.parse.name_translate(self.dev1.get_config())
 
-            if self.model == "elusb2" or self.model == "elusb2lcd":
-                self.widgets.get_object("hbox13").show()
-                self.widgets.get_object("hbox14").show()
-                self.widgets.get_object("hbox15").show()
-                self.widgets.get_object("hbox16").show()
-            else:
-                self.widgets.get_object("hbox13").hide()
-                self.widgets.get_object("hbox14").hide()
-                self.widgets.get_object("hbox15").hide()
-                self.widgets.get_object("hbox16").hide()
-            
-            if self.debug:
-                print "#DEBUG# DEVICE STATE: %s" % self.status_msg  
-                print "#DEBUG# RECORDING COUNT: %d" % self.sample_count             
+                self.widgets.get_object('entry1').set_text(self.name_recording)
+
+                self.widgets.get_object('checkbutton4').set_sensitive(False)
+                self.widgets.get_object('checkbutton5').set_sensitive(False)
+                self.widgets.get_object('checkbutton7').set_sensitive(False)
+                self.widgets.get_object('checkbutton9').set_sensitive(False)
+
+                if self.model == "elusb2" or self.model == "elusb2lcd":
+                    self.widgets.get_object("hbox13").show()
+                    self.widgets.get_object("hbox14").show()
+                    self.widgets.get_object("hbox15").show()
+                    self.widgets.get_object("hbox16").show()
+                else:
+                    self.widgets.get_object("hbox13").hide()
+                    self.widgets.get_object("hbox14").hide()
+                    self.widgets.get_object("hbox15").hide()
+                    self.widgets.get_object("hbox16").hide()
+                
+                if self.debug:
+                    print "#DEBUG# DEVICE STATE: %s" % self.status_msg  
+                    print "#DEBUG# RECORDING COUNT: %d" % self.sample_count             
 
         if self.debug:
             self.widgets.get_object('label1').set_text("eltuxusb device manager (DEBUG MODE)")
