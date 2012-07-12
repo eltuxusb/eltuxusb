@@ -121,7 +121,8 @@ class el_settings:
 
 class el_buffer:
     "Here we define the buffer config for the diffrent devices"
-    def __init__(self):
+    def __init__(self, debug):
+        self.debug = debug
         self.model = ""
         self.name = ""
         self.hour = ""
@@ -198,6 +199,36 @@ class el_buffer:
     def set_sn(self, sn):
         self.sn = sn
 
+    def get_calib_m(self):
+        return self.calib_m
+
+    def get_calib_c(self):
+        return self.calib_c
+
+    def get_display_unit_text(self):
+        return self.display_unit_text
+
+    def get_calibration_input1_text(self):
+        return self.calibration_input1_text
+
+    def get_calibration_output1_text(self):
+        return self.calibration_output1_text
+
+    def get_calibration_input2_text(self):
+        return self.calibration_input2_text
+
+    def get_calibration_output2_text(self):
+        return self.calibration_output2_text
+
+    def get_scaling_factor(self):
+        return self.scaling_factor
+
+    def get_high_alarm_level_text(self):
+        return self.high_alarm_level_text
+
+    def get_low_alarm_level_text(self):
+        return self.low_alarm_level_text
+
     def get_original_buffer(self):
         return self.actual_buffer
 
@@ -209,9 +240,6 @@ class el_buffer:
     ######
 
     def setup(self):
-        #print ""
-        #print self.actual_buffer
-        #print ""
 
         # The first 32 bytes are the same for every devices
         self.device_model = self.actual_buffer[0]
@@ -245,6 +273,58 @@ class el_buffer:
             self.res1 = self.actual_buffer[59]
             self.res2 = self.actual_buffer[60]
 
+        
+        if self.model == "elusb3_2":
+            self.display_unit_text = self.actual_buffer[64:76]
+            self.calibration_input1_text = self.actual_buffer[76:84]
+            self.calibration_output1_text = self.actual_buffer[84:92]
+            self.calibration_input2_text = self.actual_buffer[92:100]                        
+            self.calibration_output2_text = self.actual_buffer[100:108]
+            self.scaling_factor = self.actual_buffer[108:112]
+            self.high_alarm_level_text = self.actual_buffer[112:120]
+            self.low_alarm_level_text = self.actual_buffer[120:128]
+
+            self.default_range_description_text = self.actual_buffer[128:142]
+            self.default_input_unit_text = self.actual_buffer[142:154]
+            self.default_display_unit = self.actual_buffer[154:166]
+            self.default_calibration_input1_text = self.actual_buffer[166:174]
+            self.default_calibration_output1_text = self.actual_buffer[174:182]
+            self.default_calibration_input2_text = self.actual_buffer[182:190]
+            self.default_calibration_output2_text = self.actual_buffer[190:198]
+            self.default_high_alarm_level_text = self.actual_buffer[198:206]
+            self.default_low_alarm_level_text = self.actual_buffer[206:214]
+            
+
+        if self.debug:
+            print "\n#DEBUG# ###################"
+            print "#DEBUG# RAW DEVICE SETTINGS"
+            print "#DEBUG# RAW # DEVICE MODEL: %s" % self.device_model
+            print "#DEBUG# RAW # COMMAND TYPE: %s" % self.cmd_type
+            print "#DEBUG# RAW # RECORD NAME : %s" % self.name
+            print "#DEBUG# RAW # START HOUR  : %s" % self.hour
+            print "#DEBUG# RAW # START MINUTE: %s" % self.minutes
+            print "#DEBUG# RAW # START SECOND: %s" % self.seconds
+            print "#DEBUG# RAW # CALIB M VALUE: %s" % self.calib_m
+            print "#DEBUG# RAW # CALIB C VALUE: %s" % self.calib_c
+
+            if self.model == "elusb3_2":
+                print "#DEBUG# RAW # DISPLAY UNIT TEXT: %s" % self.display_unit_text
+                print "#DEBUG# RAW # CALIBRATION INPUT1 TEXT: %s" % self.calibration_input1_text
+                print "#DEBUG# RAW # CALIBRATION OUTPUT1 TEXT: %s" % self.calibration_output1_text
+                print "#DEBUG# RAW # CALIBRATION INPUT2 TEXT: %s" % self.calibration_input2_text
+                print "#DEBUG# RAW # CALIBRATION OUTPUT2 TEXT: %s" % self.calibration_output2_text
+                print "#DEBUG# RAW # SCALING FACTOR: %s" % self.scaling_factor
+                print "#DEBUG# RAW # HIGH ALARM LEVEL TEXT: %s" % self.high_alarm_level_text
+                print "#DEBUG# RAW # LOW ALARM LEVEL TEXT: %s" % self.low_alarm_level_text
+                print "#DEBUG# RAW # DEFAULT RANGE DECRIPTION TEXT: %s" % self.default_range_description_text
+                print "#DEBUG# RAW # DEFAULT INPUT UNIT TEXT: %s" % self.default_input_unit_text
+                print "#DEBUG# RAW # DEFAULT DISPLAY UNIT: %s" % self.default_display_unit
+                print "#DEBUG# RAW # DEFAULT CALIBRATION INPUT1 TEXT: %s" % self.default_calibration_input1_text
+                print "#DEBUG# RAW # DEFAULT CALIBRATION OUTPUT1 TEXT: %s" % self.default_calibration_output1_text
+                print "#DEBUG# RAW # DEFAULT CALIBRATION INPUT2 TEXT: %s" % self.default_calibration_input2_text
+                print "#DEBUG# RAW # DEFAULT CALIBRATION OUTPUT2 TEXT: %s" % self.default_calibration_output2_text
+                print "#DEBUG# RAW # DEFAULT HIGH ALARM LEVEL TEXT: %s" % self.default_high_alarm_level_text
+                print "#DEBUG# RAW # DEFAULT LOW ALARM LEVEL TEXT: %s" % self.default_low_alarm_level_text   
 
     def get_new_buffer(self):
 

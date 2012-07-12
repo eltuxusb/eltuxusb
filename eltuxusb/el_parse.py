@@ -37,10 +37,10 @@ class el1_parse:
 
 
     # Extract the name of the recording from the config buffer
-    def name_translate(self, config):
+    def name_translate(self, raw_config):
         self.name = ""
 
-        self.name_byte = config[2:17]
+        self.name_byte = raw_config
 
         for i in self.name_byte:
 

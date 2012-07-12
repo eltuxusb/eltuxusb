@@ -134,7 +134,7 @@ class el1_device:
         self.read_config = 0
         # ANCIEN BUFFER self.rd_buffer = el1_buffer()
 
-        self.new_buffer = el_buffer()
+        self.new_buffer = el_buffer(self.debug)
         self.settings = el_settings()
 
         self.read_block = []
@@ -189,6 +189,8 @@ class el1_device:
         self.new_buffer.set_model(self.device_model)
 
         if self.debug:
+            print "\n#DEBUG# ###################"
+            print "#DEBUG# CONVERTED SETTINGS"
             print "#DEBUG# DEVICE IDENT: %s" % self.read_config[0]
             print "#DEBUG# DEVICE MODEL: %s" % self.device_model
             print "#DEBUG# DEVICE NAME : %s" % self.device_full_name

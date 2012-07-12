@@ -191,7 +191,7 @@ class eltuxusb:
                 #self.widgets.get_object('stop_button').set_sensitive(True)
 
                 self.widgets.get_object('new_button').set_sensitive(True)
-                self.name_recording = self.parse.name_translate(self.dev1.get_config())
+                self.name_recording = self.parse.name_translate(self.dev1.get_config()[2:18])
 
                 self.widgets.get_object('entry1').set_text(self.name_recording)
 
@@ -210,16 +210,55 @@ class eltuxusb:
                     self.widgets.get_object("hbox14").hide()
                     self.widgets.get_object("hbox15").hide()
                     self.widgets.get_object("hbox16").hide()
-                
-                if self.debug:
-                    print "#DEBUG# DEVICE STATE: %s" % self.status_msg  
-                    print "#DEBUG# RECORDING COUNT: %d" % self.sample_count             
 
-        if self.debug:
-            self.widgets.get_object('label1').set_text("eltuxusb device manager (DEBUG MODE)")
+            if self.debug:
+                # RAW VALUES (RAW)
+                self.raw_calib_m = self.dev1.new_buffer.get_calib_m()
+                self.raw_calib_c = self.dev1.new_buffer.get_calib_c()
+
+                self.cnv_calib_m = el1_math().base256to10(self.raw_calib_m)
+                self.cnv_calib_c = el1_math().base256to10(self.raw_calib_c)
+
+                self.widgets.get_object('label1').set_text("eltuxusb device manager (DEBUG MODE)")
+                print "#DEBUG# DEVICE STATE: %s" % self.status_msg  
+                print "#DEBUG# RECORDING COUNT: %d" % self.sample_count
+                print "#DEBUG# CALIBRATION M: %d" % self.cnv_calib_m
+                print "#DEBUG# CALIBRATION C: %d" % self.cnv_calib_c
+
+
+                if self.model == "elusb3_2":
+                    # RAW VALUES (RAW)
+                    self.raw_display_unit_text = self.dev1.new_buffer.get_display_unit_text()
+                    self.raw_calibration_input1_text = self.dev1.new_buffer.get_calibration_input1_text()
+                    self.raw_calibration_output1_text = self.dev1.new_buffer.get_calibration_output1_text()
+                    self.raw_calibration_input2_text = self.dev1.new_buffer.get_calibration_input2_text()
+                    self.raw_calibration_output2_text = self.dev1.new_buffer.get_calibration_output2_text()
+                    self.raw_scaling_factor = self.dev1.new_buffer.get_scaling_factor()
+                    self.raw_high_alarm_level_text = self.dev1.new_buffer.get_high_alarm_level_text()
+                    self.raw_low_alarm_level_text = self.dev1.new_buffer.get_low_alarm_level_text()
+
+                    # CONVERTED VALUE (CNV)
+                    self.cnv_display_unit_text = self.parse.name_translate(self.raw_display_unit_text)
+                    self.cnv_calibration_input1_text = self.parse.name_translate(self.raw_calibration_input1_text)
+                    self.cnv_calibration_output1_text = self.parse.name_translate(self.raw_calibration_output1_text)
+                    self.cnv_calibration_input2_text = self.parse.name_translate(self.raw_calibration_input2_text)
+                    self.cnv_calibration_output2_text = self.parse.name_translate(self.raw_calibration_output2_text)
+                    self.cnv_scaling_factor = el1_math().base256to10(self.raw_scaling_factor)
+                    self.cnv_high_alarm_level_text = self.parse.name_translate(self.raw_high_alarm_level_text)
+                    self.cnv_low_alarm_level_text = self.parse.name_translate(self.raw_low_alarm_level_text)
+
+                    
+
+                    print "#DEBUG# DISPLAY UNIT TEXT: %s" % self.cnv_display_unit_text
+                    print "#DEBUG# CALIBRATION INPUT1 TEXT: %s" % self.cnv_calibration_input1_text
+                    print "#DEBUG# CALIBRATION OUTPUT1 TEXT: %s" % self.cnv_calibration_output1_text     
+                    print "#DEBUG# CALIBRATION INPUT2 TEXT: %s" % self.cnv_calibration_input2_text
+                    print "#DEBUG# CALIBRATION OUTPUT2 TEXT: %s" % self.cnv_calibration_output2_text
+                    print "#DEBUG# SCALING FACTOR: %f" % self.cnv_scaling_factor
+                    print "#DEBUG# HIGH ALARM LEVEL TEXT: %s" % self.cnv_high_alarm_level_text
+                    print "#DEBUG# LOW ALARM LEVEL TEXT: %s" % self.cnv_low_alarm_level_text
 
         return True
-        
 
     def delay_recording(self, source=None, event=None):
         self.hour = time.localtime()[3]
