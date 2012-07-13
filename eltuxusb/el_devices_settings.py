@@ -3,6 +3,7 @@
 
 import usb.core
 import usb.util
+from el_devices import el1_math
 
 class el_settings:
     "Here we return the settings of the different devices"
@@ -130,6 +131,7 @@ class el_buffer:
         self.actual_buffer = []
         self.conig_size = ""
         self.new_buffer = "not yet set"
+        self.math = el1_math()
 
     ######
     # Public functions
@@ -242,6 +244,9 @@ class el_buffer:
     def setup(self):
 
         # The first 32 bytes are the same for every devices
+
+        print "SETUP"
+
         self.device_model = self.actual_buffer[0]
         self.cmd_type = self.actual_buffer[1]
         self.name = self.actual_buffer[2:18]
@@ -273,8 +278,10 @@ class el_buffer:
             self.res1 = self.actual_buffer[59]
             self.res2 = self.actual_buffer[60]
 
+
         
         if self.model == "elusb3_2":
+            # RAW VALUES
             self.display_unit_text = self.actual_buffer[64:76]
             self.calibration_input1_text = self.actual_buffer[76:84]
             self.calibration_output1_text = self.actual_buffer[84:92]
@@ -293,9 +300,22 @@ class el_buffer:
             self.default_calibration_output2_text = self.actual_buffer[190:198]
             self.default_high_alarm_level_text = self.actual_buffer[198:206]
             self.default_low_alarm_level_text = self.actual_buffer[206:214]
+
+            # CONVERTED VALUE (CNV)
+            self.cnv_display_unit_text = self.math.name_translate(self.display_unit_text)
+            self.cnv_calibration_input1_text = self.math.name_translate(self.calibration_input1_text)
+            self.cnv_calibration_output1_text = self.math.name_translate(self.calibration_output1_text)
+            self.cnv_calibration_input2_text = self.math.name_translate(self.calibration_input2_text)
+            self.cnv_calibration_output2_text = self.math.name_translate(self.calibration_output2_text)
+            self.cnv_scaling_factor = self.math.base256to10(self.scaling_factor)
+            self.cnv_high_alarm_level_text = self.math.name_translate(self.high_alarm_level_text)
+            self.cnv_low_alarm_level_text = self.math.name_translate(self.low_alarm_level_text)
+
             
 
+       
         if self.debug:
+            print "POUET"
             print "\n#DEBUG# ###################"
             print "#DEBUG# RAW DEVICE SETTINGS"
             print "#DEBUG# RAW # DEVICE MODEL: %s" % self.device_model
@@ -325,6 +345,20 @@ class el_buffer:
                 print "#DEBUG# RAW # DEFAULT CALIBRATION OUTPUT2 TEXT: %s" % self.default_calibration_output2_text
                 print "#DEBUG# RAW # DEFAULT HIGH ALARM LEVEL TEXT: %s" % self.default_high_alarm_level_text
                 print "#DEBUG# RAW # DEFAULT LOW ALARM LEVEL TEXT: %s" % self.default_low_alarm_level_text   
+
+        
+
+                print "#DEBUG# DISPLAY UNIT TEXT: %s" % self.cnv_display_unit_text
+                print "#DEBUG# CALIBRATION INPUT1 TEXT: %s" % self.cnv_calibration_input1_text
+                print "#DEBUG# CALIBRATION OUTPUT1 TEXT: %s" % self.cnv_calibration_output1_text     
+                print "#DEBUG# CALIBRATION INPUT2 TEXT: %s" % self.cnv_calibration_input2_text
+                print "#DEBUG# CALIBRATION OUTPUT2 TEXT: %s" % self.cnv_calibration_output2_text
+                print "#DEBUG# SCALING FACTOR: %f" % self.cnv_scaling_factor
+                print "#DEBUG# HIGH ALARM LEVEL TEXT: %s" % self.cnv_high_alarm_level_text
+                print "#DEBUG# LOW ALARM LEVEL TEXT: %s" % self.cnv_low_alarm_level_text
+
+
+
 
     def get_new_buffer(self):
 

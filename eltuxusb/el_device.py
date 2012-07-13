@@ -46,6 +46,20 @@ class el1_math:
     def __init__(self):
         self.fake = 0
     
+    # Extract the name of the recording from the config buffer
+    def name_translate(self, raw_config):
+        self.name = ""
+
+        self.name_byte = raw_config
+
+        for i in self.name_byte:
+
+            if i == 0:
+                break
+            else:
+                self.name += (chr(i))
+        return self.name
+
     # Convert alarm to a decimal value
     def alarm_convert(self, value, unit):
         self.value_converted = 0

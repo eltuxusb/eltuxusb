@@ -191,7 +191,7 @@ class eltuxusb:
                 #self.widgets.get_object('stop_button').set_sensitive(True)
 
                 self.widgets.get_object('new_button').set_sensitive(True)
-                self.name_recording = self.parse.name_translate(self.dev1.get_config()[2:18])
+                self.name_recording = self.math.name_translate(self.dev1.get_config()[2:18])
 
                 self.widgets.get_object('entry1').set_text(self.name_recording)
 

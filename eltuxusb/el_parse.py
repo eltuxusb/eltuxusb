@@ -36,20 +36,6 @@ class el1_parse:
         self.text_time = ",Time"
 
 
-    # Extract the name of the recording from the config buffer
-    def name_translate(self, raw_config):
-        self.name = ""
-
-        self.name_byte = raw_config
-
-        for i in self.name_byte:
-
-            if i == 0:
-                break
-            else:
-                self.name += (chr(i))
-        return self.name
-
     # This formula calculate the Dew point with temperature and relative humidity
     def dew_point(self, temperature, relative_humidity):
         T = temperature
