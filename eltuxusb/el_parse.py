@@ -34,6 +34,7 @@ class el1_parse:
         self.text_dew_point_c = ",dew point(°C)"
         self.text_dew_point_f = ",dew point(°F)"
         self.text_time = ",Time"
+        self.math = el1_math()
 
 
     # This formula calculate the Dew point with temperature and relative humidity
@@ -236,7 +237,7 @@ class el1_parse:
         self.raw_low_hum_alarm = config[57]
         self.raw_data = recordings
         self.dest_file = destination_file
-        self.name = self.name_translate(config)
+        self.name = self.math.name_translate(config[2:18])
         self.serial = (config[55] * 16777216) + (config[54] * 65536) + (config[53] * 256) + (config[52])
         self.offset_start = (config[27] * 16777216) + (config[26] * 65536) + (config[25] * 256) + (config[24])
         self.first_rec_time = datetime.datetime(2000+config[23], config[22], config[21], config[18], config[19], config[20]) + datetime.timedelta(0,self.offset_start)

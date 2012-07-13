@@ -6,7 +6,8 @@ import usb.util
 import sys
 import datetime
 import time
-from el_devices_settings import *
+#import el_devices_settings *
+from el_devices_settings import el_settings, el_buffer
 
 class el1_buffer:
     "Device configuration buffer"
@@ -39,6 +40,10 @@ class el1_buffer:
         self.res1 = 0
         self.res2 = 0
         self.raw_buffer = []
+
+class el_test:
+    def __init__(self):
+        self.rrr = 0
 
 
 class el1_math:
@@ -203,8 +208,6 @@ class el1_device:
         self.new_buffer.set_model(self.device_model)
 
         if self.debug:
-            print "\n#DEBUG# ###################"
-            print "#DEBUG# CONVERTED SETTINGS"
             print "#DEBUG# DEVICE IDENT: %s" % self.read_config[0]
             print "#DEBUG# DEVICE MODEL: %s" % self.device_model
             print "#DEBUG# DEVICE NAME : %s" % self.device_full_name

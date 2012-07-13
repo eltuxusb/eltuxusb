@@ -10,6 +10,7 @@ from el_device import * # <- need to clean, dirty
 from el_input import *  # <- need to clean, dirty
 from el_parse import *  # <- need to clean, dirty
 from el_plot import *  # <- need to clean, dirty
+#from el_devices_settings import * # <- need to clean, dirty
 
 # Auto-determine the location of the Glade file.
 my_directory = os.path.dirname(os.path.realpath(__file__))
@@ -142,7 +143,9 @@ class eltuxusb:
             config  = self.dev1.get_config()
             self.full_name = self.dev1.device_full_name
 
-            self.sample_count = el1_math().base256to10(config[30:32])
+            self.math = el1_math()
+
+            self.sample_count = self.math.base256to10(config[30:32])
 
             if self.sample_count == 0:
                 self.widgets.get_object('download_button').set_sensitive(False)
@@ -212,51 +215,10 @@ class eltuxusb:
                     self.widgets.get_object("hbox16").hide()
 
             if self.debug:
-                # RAW VALUES (RAW)
-                self.raw_calib_m = self.dev1.new_buffer.get_calib_m()
-                self.raw_calib_c = self.dev1.new_buffer.get_calib_c()
-
-                self.cnv_calib_m = el1_math().base256to10(self.raw_calib_m)
-                self.cnv_calib_c = el1_math().base256to10(self.raw_calib_c)
 
                 self.widgets.get_object('label1').set_text("eltuxusb device manager (DEBUG MODE)")
                 print "#DEBUG# DEVICE STATE: %s" % self.status_msg  
                 print "#DEBUG# RECORDING COUNT: %d" % self.sample_count
-                print "#DEBUG# CALIBRATION M: %d" % self.cnv_calib_m
-                print "#DEBUG# CALIBRATION C: %d" % self.cnv_calib_c
-
-
-                if self.model == "elusb3_2":
-                    # RAW VALUES (RAW)
-                    self.raw_display_unit_text = self.dev1.new_buffer.get_display_unit_text()
-                    self.raw_calibration_input1_text = self.dev1.new_buffer.get_calibration_input1_text()
-                    self.raw_calibration_output1_text = self.dev1.new_buffer.get_calibration_output1_text()
-                    self.raw_calibration_input2_text = self.dev1.new_buffer.get_calibration_input2_text()
-                    self.raw_calibration_output2_text = self.dev1.new_buffer.get_calibration_output2_text()
-                    self.raw_scaling_factor = self.dev1.new_buffer.get_scaling_factor()
-                    self.raw_high_alarm_level_text = self.dev1.new_buffer.get_high_alarm_level_text()
-                    self.raw_low_alarm_level_text = self.dev1.new_buffer.get_low_alarm_level_text()
-
-                    # CONVERTED VALUE (CNV)
-                    self.cnv_display_unit_text = self.parse.name_translate(self.raw_display_unit_text)
-                    self.cnv_calibration_input1_text = self.parse.name_translate(self.raw_calibration_input1_text)
-                    self.cnv_calibration_output1_text = self.parse.name_translate(self.raw_calibration_output1_text)
-                    self.cnv_calibration_input2_text = self.parse.name_translate(self.raw_calibration_input2_text)
-                    self.cnv_calibration_output2_text = self.parse.name_translate(self.raw_calibration_output2_text)
-                    self.cnv_scaling_factor = el1_math().base256to10(self.raw_scaling_factor)
-                    self.cnv_high_alarm_level_text = self.parse.name_translate(self.raw_high_alarm_level_text)
-                    self.cnv_low_alarm_level_text = self.parse.name_translate(self.raw_low_alarm_level_text)
-
-                    
-
-                    print "#DEBUG# DISPLAY UNIT TEXT: %s" % self.cnv_display_unit_text
-                    print "#DEBUG# CALIBRATION INPUT1 TEXT: %s" % self.cnv_calibration_input1_text
-                    print "#DEBUG# CALIBRATION OUTPUT1 TEXT: %s" % self.cnv_calibration_output1_text     
-                    print "#DEBUG# CALIBRATION INPUT2 TEXT: %s" % self.cnv_calibration_input2_text
-                    print "#DEBUG# CALIBRATION OUTPUT2 TEXT: %s" % self.cnv_calibration_output2_text
-                    print "#DEBUG# SCALING FACTOR: %f" % self.cnv_scaling_factor
-                    print "#DEBUG# HIGH ALARM LEVEL TEXT: %s" % self.cnv_high_alarm_level_text
-                    print "#DEBUG# LOW ALARM LEVEL TEXT: %s" % self.cnv_low_alarm_level_text
 
         return True
 
@@ -356,7 +318,7 @@ class eltuxusb:
 
         # Read the entered recording name, and check if there's no illegal char in it, then we convert it to ascii string
         self.recording_name = self.widgets.get_object('entry1').get_text()
-        self.illegal_char = el1_math().illegal_char(self.recording_name)
+        self.illegal_char = self.math.illegal_char(self.recording_name)
 
         if self.illegal_char:
             self.status = 1
@@ -369,7 +331,7 @@ class eltuxusb:
         self.sample_rate = self.widgets.get_object('combobox1').get_model()[self.combobox_item][1]
            
         # And convert it from base 10 to 256
-        self.converted_sample_rate = el1_math().base10to256(self.sample_rate, 2)
+        self.converted_sample_rate = self.math.base10to256(self.sample_rate, 2)
 
         # We check if the recording is delayed or not and set the start time/date value
         if self.widgets.get_object('checkbutton1').get_active() == True:
@@ -397,7 +359,7 @@ class eltuxusb:
             self.status = 1
 
         # We convert the offset seconds into a readable format for the device
-        self.offset_seconds_converted = el1_math().base10to256(self.offset_seconds, 4)
+        self.offset_seconds_converted = self.math.base10to256(self.offset_seconds, 4)
 
         # Check the unit selected (Celsuis=0 or Fahrenheit=1)
         if self.widgets.get_object('radiobutton1').get_active():
@@ -409,7 +371,7 @@ class eltuxusb:
         if self.widgets.get_object('checkbutton2').get_active() == True:
             self.high_alarm = "1"
             self.high_alarm_value = self.widgets.get_object('spin_button_high_alarm').get_value_as_int()
-            self.high_alarm_value_converted = el1_math().alarm_convert(self.high_alarm_value, self.unit)
+            self.high_alarm_value_converted = self.math.alarm_convert(self.high_alarm_value, self.unit)
 
             if self.widgets.get_object('checkbutton4').get_active() == True:
                 self.high_alarm_latch = "1"
@@ -423,7 +385,7 @@ class eltuxusb:
         if self.widgets.get_object('checkbutton3').get_active() == True:
             self.low_alarm = "1"
             self.low_alarm_value = self.widgets.get_object('spin_button_low_alarm').get_value_as_int()
-            self.low_alarm_value_converted = el1_math().alarm_convert(self.low_alarm_value, self.unit)
+            self.low_alarm_value_converted = self.math.alarm_convert(self.low_alarm_value, self.unit)
 
 
             if self.widgets.get_object('checkbutton5').get_active() == True:
@@ -438,7 +400,7 @@ class eltuxusb:
             if self.widgets.get_object('checkbutton6').get_active() == True:
                 self.high_humidity_alarm = "1"
                 self.high_humidity_alarm_value = self.widgets.get_object('spin_button_high_h_alarm').get_value_as_int()
-                self.high_humidity_alarm_value_converted = el1_math().humidity_alarm_convert(self.high_humidity_alarm_value)
+                self.high_humidity_alarm_value_converted = self.math.humidity_alarm_convert(self.high_humidity_alarm_value)
 
                 if self.widgets.get_object('checkbutton7').get_active() == True:
                     self.high_humidity_alarm_latch = "1"
@@ -452,7 +414,7 @@ class eltuxusb:
             if self.widgets.get_object('checkbutton8').get_active() == True:
                 self.low_humidity_alarm = "1"
                 self.low_humidity_alarm_value = self.widgets.get_object('spin_button_low_h_alarm').get_value_as_int()
-                self.low_humidity_alarm_value_converted = el1_math().humidity_alarm_convert(self.low_humidity_alarm_value)
+                self.low_humidity_alarm_value_converted = self.math.humidity_alarm_convert(self.low_humidity_alarm_value)
 
                 if self.widgets.get_object('checkbutton9').get_active() == True:
                     self.low_humidity_alarm_latch = "1"
