@@ -159,7 +159,7 @@ class eltuxusb:
             self.widgets.get_object('recordings').show()
 
 
-            if self.model != "elusb2" and self.model != "elusb1_17":
+            if self.model != "elusb2" and self.model != "elusb1_17" and self.model != "elusb3_2":
                 self.widgets.get_object('download_button').set_sensitive(False)
                 self.widgets.get_object('stop_button').set_sensitive(False)
                 self.widgets.get_object('new_button').set_sensitive(False)
@@ -446,8 +446,10 @@ class eltuxusb:
             self.dev1.new_buffer.set_day(self.start_day)
             self.dev1.new_buffer.set_month(self.start_month)
             self.dev1.new_buffer.set_year(self.start_year)
-            self.dev1.new_buffer.set_hal(self.high_alarm_value_converted)
-            self.dev1.new_buffer.set_lal(self.low_alarm_value_converted)
+
+            if self.model != "elusb3_2":
+                self.dev1.new_buffer.set_hal(self.high_alarm_value_converted)
+                self.dev1.new_buffer.set_lal(self.low_alarm_value_converted)
 
             self.dev1.new_buffer.set_sample_count([0, 0])
 

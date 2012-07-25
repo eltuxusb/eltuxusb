@@ -13,6 +13,7 @@ class el_settings:
                 "elusb1_17": 64,
                 "elusb2": 128,
                 "elusb3_1": 256,
+                "elusb3_2": 256,
                 "elusb3_256": 2,
                 "elusb4_1": 256,
                 "elusb4_2": 256,
@@ -261,19 +262,24 @@ class el_buffer:
         self.calib_c = self.actual_buffer[40:44]
         self.version = self.actual_buffer[48:52]
 
-        if self.model == "elusb1_16" or self.model == "elusb1_17" or self.model == "elusb2" or self.model == "elusb2lcd" or self.model == "elusb2plus":
+        if self.model == "elusb1_16" or self.model == "elusb1_17" or self.model == "elusb2" or self.model == "elusb2lcd" or self.model == "elusb2plus" or self.model == "elusb3_2":
 
-            self.hal = self.actual_buffer[34]
-            self.lal = self.actual_buffer[35]
+            if self.model == "elusb3_2":
+                self.hal = self.actual_buffer[34:36]
+                self.lal = self.actual_buffer[56:58]
+
+            else:
+                self.hal = self.actual_buffer[34]
+                self.lal = self.actual_buffer[35]
+                self.hal_ch2 = self.actual_buffer[56]
+                self.lal_ch2 = self.actual_buffer[57]
+
             self.factory_use = self.actual_buffer[44:46]
             self.unit = self.actual_buffer[46]
             self.flag_bits2 = self.actual_buffer[47]
-            self.hal_ch2 = self.actual_buffer[56]
-            self.lal_ch2 = self.actual_buffer[57]
             self.roll_count = self.actual_buffer[58]
             self.res1 = self.actual_buffer[59]
             self.res2 = self.actual_buffer[60]
-
 
         
         if self.model == "elusb3_2":
@@ -286,7 +292,6 @@ class el_buffer:
             self.scaling_factor = self.actual_buffer[108:112]
             self.high_alarm_level_text = self.actual_buffer[112:120]
             self.low_alarm_level_text = self.actual_buffer[120:128]
-
             self.default_range_description_text = self.actual_buffer[128:142]
             self.default_input_unit_text = self.actual_buffer[142:154]
             self.default_display_unit = self.actual_buffer[154:166]
@@ -306,7 +311,15 @@ class el_buffer:
             self.cnv_scaling_factor = self.math.base256to10(self.scaling_factor)
             self.cnv_high_alarm_level_text = self.math.name_translate(self.high_alarm_level_text)
             self.cnv_low_alarm_level_text = self.math.name_translate(self.low_alarm_level_text)
-
+            self.cnv_default_range_description_text = self.math.name_translate(self.default_range_description_text)
+            self.cnv_default_input_unit_text = self.math.name_translate(self.default_input_unit_text)
+            self.cnv_default_display_unit = self.math.name_translate(self.default_display_unit)
+            self.cnv_default_calibration_input1_text = self.math.name_translate(self.default_calibration_input1_text)
+            self.cnv_default_calibration_output1_text = self.math.name_translate(self.default_calibration_output1_text)
+            self.cnv_default_calibration_input2_text = self.math.name_translate(self.default_calibration_input2_text)
+            self.cnv_default_calibration_output2_text = self.math.name_translate(self.default_calibration_output2_text)
+            self.cnv_default_high_alarm_level_text = self.math.name_translate(self.default_high_alarm_level_text)
+            self.cnv_default_low_alarm_level_text = self.math.name_translate(self.default_low_alarm_level_text)
 
         if self.debug:
             print "\n#DEBUG# ###################"
@@ -337,7 +350,8 @@ class el_buffer:
                 print "#DEBUG# DEFAULT CALIBRATION INPUT2 TEXT: %s" % self.default_calibration_input2_text
                 print "#DEBUG# DEFAULT CALIBRATION OUTPUT2 TEXT: %s" % self.default_calibration_output2_text
                 print "#DEBUG# DEFAULT HIGH ALARM LEVEL TEXT: %s" % self.default_high_alarm_level_text
-                print "#DEBUG# DEFAULT LOW ALARM LEVEL TEXT: %s" % self.default_low_alarm_level_text   
+                print "#DEBUG# DEFAULT LOW ALARM LEVEL TEXT: %s" % self.default_low_alarm_level_text
+ 
                 print "\n#DEBUG# ###################"
                 print "#DEBUG# CONVERTED DEVICE SETTINGS"
                 print "#DEBUG# DISPLAY UNIT TEXT: %s" % self.cnv_display_unit_text
@@ -348,9 +362,20 @@ class el_buffer:
                 print "#DEBUG# SCALING FACTOR: %f" % self.cnv_scaling_factor
                 print "#DEBUG# HIGH ALARM LEVEL TEXT: %s" % self.cnv_high_alarm_level_text
                 print "#DEBUG# LOW ALARM LEVEL TEXT: %s" % self.cnv_low_alarm_level_text
+                print "#DEBUG# DEFAULT RANGE DESCRIPTION TEXT: %s" % self.cnv_default_range_description_text
+                print "#DEBUG# DEFAULT INPUT UNIT TEXT: %s" % self.cnv_default_input_unit_text
+                print "#DEBUG# DEFAULT DISPLAY UNIT: %s" % self.cnv_default_display_unit
+                print "#DEBUG# DEFAULT CALIBRATION INPUT1 TEXT: %s" % self.cnv_default_calibration_input1_text
+                print "#DEBUG# DEFAULT CALIBRATION OUTPUT1 TEXT: %s" % self.cnv_default_calibration_output1_text
+                print "#DEBUG# DEFAULT CALIBRATION INPUT2 TEXT: %s" % self.cnv_default_calibration_input2_text
+                print "#DEBUG# DEFAULT CALIBRATION OUTPUT2 TEXT: %s" % self.cnv_default_calibration_output2_text
+                print "#DEBUG# DEFAULT HIGH ALARM LEVEL TEXT: %s" % self.cnv_default_high_alarm_level_text
+                print "#DEBUG# DEFAULT LOW ALARM LEVEL TEXT: %s" % self.cnv_default_low_alarm_level_text
+
+
 
     def get_new_buffer(self):
-
+    
         self.new_buffer = []
         self.new_buffer.append(self.device_model)
         self.new_buffer.append(self.cmd_type)
@@ -366,10 +391,16 @@ class el_buffer:
         self.new_buffer += self.sample_count
         self.new_buffer += self.flag_bits
 
-        if self.model == "elusb1_16" or self.model == "elusb1_17" or self.model == "elusb2" or self.model == "elusb2lcd" or self.model == "elusb2plus":
+        if self.model == "elusb1_16" or self.model == "elusb1_17" or self.model == "elusb2" or self.model == "elusb2lcd" or self.model == "elusb2plus" or self.model == "elusb3_2":
 
-            self.new_buffer.append(self.hal)
-            self.new_buffer.append(self.lal)
+
+            if self.model == "elusb3_2":
+                self.new_buffer += self.hal
+
+            else:
+                self.new_buffer.append(self.hal)
+                self.new_buffer.append(self.lal)
+
             self.new_buffer += self.calib_m
             self.new_buffer += self.calib_c
             self.new_buffer += self.factory_use
@@ -377,8 +408,14 @@ class el_buffer:
             self.new_buffer.append(self.flag_bits2)
             self.new_buffer += self.version
             self.new_buffer += self.sn
-            self.new_buffer.append(self.hal_ch2)
-            self.new_buffer.append(self.lal_ch2)
+
+            if self.model == "elusb3_2":            
+                self.new_buffer += self.lal
+        
+            else:
+                self.new_buffer.append(self.hal_ch2)
+                self.new_buffer.append(self.lal_ch2)
+
             self.new_buffer.append(self.roll_count)
             self.new_buffer.append(self.res1)
             self.new_buffer.append(self.res2)
