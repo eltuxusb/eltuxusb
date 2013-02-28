@@ -279,9 +279,14 @@ class el_buffer:
             self.flag_bits2 = self.actual_buffer[47]
             self.roll_count = self.actual_buffer[58]
             self.res1 = self.actual_buffer[59]
-            self.res2 = self.actual_buffer[60]
+            self.maximum_samples = self.actual_buffer[60:62]
+            self.res2 = self.actual_buffer[62:64]
 
-        
+            # CONVERTED BASE VALUE (CNV)
+            self.cnv_sn = self.math.sn_convert(self.sn)
+            self.cnv_calib_m = self.math.base256to10(self.calib_m)
+            self.cnv_calib_c = self.math.base256to10(self.calib_c)
+
         if self.model == "elusb3_2":
             # RAW VALUES
             self.display_unit_text = self.actual_buffer[64:76]
@@ -332,6 +337,10 @@ class el_buffer:
             print "#DEBUG# START SECOND: %s" % self.seconds
             print "#DEBUG# CALIB M VALUE: %s" % self.calib_m
             print "#DEBUG# CALIB C VALUE: %s" % self.calib_c
+            print "#DEBUG# SERIAL NUMBER: %s" % self.sn
+
+
+            self.sn = self.actual_buffer[52:56]
 
             if self.model == "elusb3_2":
                 print "#DEBUG# DISPLAY UNIT TEXT: %s" % self.display_unit_text
@@ -352,8 +361,13 @@ class el_buffer:
                 print "#DEBUG# DEFAULT HIGH ALARM LEVEL TEXT: %s" % self.default_high_alarm_level_text
                 print "#DEBUG# DEFAULT LOW ALARM LEVEL TEXT: %s" % self.default_low_alarm_level_text
  
-                print "\n#DEBUG# ###################"
-                print "#DEBUG# CONVERTED DEVICE SETTINGS"
+            print "\n#DEBUG# ###################"
+            print "#DEBUG# CONVERTED DEVICE SETTINGS"
+            print "#DEBUG# SERIAL NUMBER: %s" % self.cnv_sn
+            print "#DEBUG# CALIBRATION M VALUE: %s" % self.cnv_calib_m
+            print "#DEBUG# CALIBRATION C VALUE: %s" % self.cnv_calib_c
+
+            if self.model == "elusb3_2":
                 print "#DEBUG# DISPLAY UNIT TEXT: %s" % self.cnv_display_unit_text
                 print "#DEBUG# CALIBRATION INPUT1 TEXT: %s" % self.cnv_calibration_input1_text
                 print "#DEBUG# CALIBRATION OUTPUT1 TEXT: %s" % self.cnv_calibration_output1_text     
@@ -386,10 +400,11 @@ class el_buffer:
         self.new_buffer.append(self.day)
         self.new_buffer.append(self.month)
         self.new_buffer.append(self.year)
-        self.new_buffer += self.start_offset
-        self.new_buffer += self.sample_rate
-        self.new_buffer += self.sample_count
-        self.new_buffer += self.flag_bits
+
+        self.new_buffer = self.new_buffer + self.start_offset \
+                                          + self.sample_rate \
+                                          + self.sample_count \
+                                          + self.flag_bits
 
         if self.model == "elusb1_16" or self.model == "elusb1_17" or self.model == "elusb2" or self.model == "elusb2lcd" or self.model == "elusb2plus" or self.model == "elusb3_2":
 
@@ -418,7 +433,29 @@ class el_buffer:
 
             self.new_buffer.append(self.roll_count)
             self.new_buffer.append(self.res1)
-            self.new_buffer.append(self.res2)
+            self.new_buffer += self.maximum_samples
+            self.new_buffer += self.res2
+
+            if self.model == "elusb3_2":            
+                #PUT EL3_2 RELATED SETTINGS HERE
+                self.new_buffer = self.new_buffer + self.display_unit_text \
+                                                  + self.calibration_input1_text \
+                                                  + self.calibration_output1_text \
+                                                  + self.calibration_input2_text \
+                                                  + self.calibration_output2_text \
+                                                  + self.scaling_factor \
+                                                  + self.high_alarm_level_text \
+                                                  + self.low_alarm_level_text \
+                                                  + self.default_range_description_text \
+                                                  + self.default_input_unit_text \
+                                                  + self.default_display_unit \
+                                                  + self.default_calibration_input1_text \
+                                                  + self.default_calibration_output1_text \
+                                                  + self.default_calibration_input2_text \
+                                                  + self.default_calibration_output2_text \
+                                                  + self.default_high_alarm_level_text \
+                                                  + self.default_low_alarm_level_text 
+
 
             while len(self.new_buffer) != self.config_size:
                 self.new_buffer.append(0)

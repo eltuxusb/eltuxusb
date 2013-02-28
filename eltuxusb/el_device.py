@@ -38,8 +38,8 @@ class el1_buffer:
         self.lal_ch2 = 0
         self.roll_count = 0
         self.res1 = 0
-        self.res2 = 0
         self.raw_buffer = []
+
 
 class el_test:
     def __init__(self):
@@ -94,6 +94,16 @@ class el1_math:
         while len(bin_32) < 8:
             bin_32 = "0" + bin_32
         return bin_32
+
+    # convert base 256 serial number to base 10
+    def sn_convert(self, sn):
+        base10sn = self.base256to10(sn)
+        base10sn = str(base10sn)
+        
+        while len(base10sn) < 9:
+            base10sn = "0" + base10sn
+
+        return base10sn
 
     # convert base 256 numbers to base 10
     def base256to10(self, base256):
@@ -159,6 +169,7 @@ class el1_device:
         self.read_block = []
         self.flag_bits = ""
         self.backup_buffer = [2, 0, 98, 117, 114, 101, 97, 117, 102, 105, 108, 105, 112, 101, 0, 0, 0, 0, 16, 8, 41, 14, 1, 10, 0, 0, 0, 0, 60, 0, 1, 0, 4, 0, 140, 80, 0, 0, 0, 63, 0, 0, 32, 194, 0, 0, 0, 0, 118, 50, 46, 48, 121, 243, 152, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.backup_buffer2 =[12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 248, 26, 0, 2, 0, 0, 0, 0, 0, 63, 0, 0, 32, 194, 0, 0, 0, 0, 0, 0, 0, 0, 177, 177, 152, 0, 0, 0, 0, 0, 251, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     ### "Public" usable functions
     def get_last_err(self):
@@ -268,14 +279,17 @@ class el1_device:
 
     # Restore original backup of the device buffer (The backup_buffer was taken from my device (elusb1), in case I broke something)
     def restore_backup(self):
+
         if self.device_search() == False :
             return False
 
         if self.config_read() == False:
             return False
 
-        if self.config_write(self.backup_buffer) != True:
+        if self.config_write(self.backup_buffer2) != True:
             return False
+        else:
+            print "OK"
 
     # Reads the device configuration
     def config_read(self):
@@ -294,12 +308,18 @@ class el1_device:
             self.size = read_device[1] + 1
 
         self.read_config = self.address.read(0x82, self.size, 0, 1000)
-        #print self.read_config
+
         if len(self.read_config) == 0:
             self.last_error = "error reading device configuration"
             return False
         else:
+            print "READCONFIG:", self.read_config
+            print type(self.read_config)
+            print type(self.read_config[40])
             self.read_config = self.read_config.tolist()
+            print type(self.read_config)
+            print type(self.read_config[40])
+            print "READCONFIG_TOLIST:", self.read_config
             self.new_buffer.set_buffer(self.read_config)
             
             if self.debug:
@@ -314,6 +334,7 @@ class el1_device:
             return False
 
         else:
+
             #dev = device_search(vendorid)
             # initialise device
             self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x02)

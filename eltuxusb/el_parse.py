@@ -55,6 +55,12 @@ class el1_parse:
             temperature = float(raw_temp - 40)
             return temperature
 
+    # Extract the temperature in Celsius or Fahrenheit from the config buffer
+    def voltage_convert(self, raw_voltage):
+
+        voltage = float(1 - raw_voltage)
+        return voltage
+
     # Extract the high alarm value in Celsius or Fahrenheit from the config buffer
     def high_alarm_convert(self, raw_high_alarm):
 
@@ -82,6 +88,72 @@ class el1_parse:
         humidity_alarm_value = float(raw_humidity_alarm) / 2
 
         return humidity_alarm_value
+
+    # Convert the recorded data from the ELUSB3 devices to the "standard" output format (same as the ELWINUSB software)
+    def elusb3_convert(self):
+
+        self.file_dest = open(self.dest_file, 'w')
+        self.file_header += self.name + ",Time" + ",Voltage(Volts)"
+        separator = ","
+
+        #if self.unit == 0:
+        #    self.file_header += self.text_celsius
+        #else:
+        #    self.file_header += self.text_fahrenheit
+
+        #if self.high_alarm_status == "1":
+        #    self.file_header += self.text_high_alarm
+
+        #if self.low_alarm_status == "1":
+        #    self.file_header += self.text_low_alarm
+
+        self.file_header += self.text_serial_number
+        self.file_dest.write(self.file_header+"\n")
+
+        line_position = 1
+        odd_or_even = 1
+        value = self.raw_data[0]
+        raw_data_number = 1
+
+        while value != 255:
+            date = str(self.first_rec_time.strftime("%d/%m/%Y %H:%M:%S"))
+
+            #cnv_voltage = self.voltage_convert(value)
+            cnv_voltage = value
+
+            #converted_high_alarm = self.high_alarm_convert(self.raw_high_alarm)
+            #converted_low_alarm = self.low_alarm_convert(self.raw_low_alarm)
+
+            line_content = str(line_position) + separator + date + separator + str(cnv_voltage)
+
+            #if self.high_alarm_status == "1":
+            #    line_content += separator + str(converted_high_alarm)
+
+            #if self.low_alarm_status == "1":
+            #   line_content += separator + str(converted_low_alarm)
+
+            if line_position == 1:
+                line_content += separator + str(self.serial)
+
+            line_content += "\n"
+
+            if odd_or_even == 1:
+                line_position += 1
+                self.first_rec_time = self.first_rec_time + datetime.timedelta(0,self.intervale_rec)            
+                self.file_dest.write(line_content)
+                odd_or_even = 0
+
+            else:
+                odd_or_even = 1
+
+
+            #self.first_rec_time = self.first_rec_time + datetime.timedelta(0,self.intervale_rec)            
+            #self.file_dest.write(line_content)
+            
+            value = self.raw_data[raw_data_number]
+            raw_data_number += 1
+
+        self.file_dest.close()
 
     # Convert the recorded data from the ELUSB2 device to the "standard" output format (same as the ELWINUSB software)
     def elusb2_convert(self):
@@ -238,7 +310,8 @@ class el1_parse:
         self.raw_data = recordings
         self.dest_file = destination_file
         self.name = self.math.name_translate(config[2:18])
-        self.serial = (config[55] * 16777216) + (config[54] * 65536) + (config[53] * 256) + (config[52])
+        self.serial = self.math.sn_convert(config[52:56])
+        #self.serial = (config[55] * 16777216) + (config[54] * 65536) + (config[53] * 256) + (config[52])
         self.offset_start = (config[27] * 16777216) + (config[26] * 65536) + (config[25] * 256) + (config[24])
         self.first_rec_time = datetime.datetime(2000+config[23], config[22], config[21], config[18], config[19], config[20]) + datetime.timedelta(0,self.offset_start)
         self.intervale_rec = (config[29] * 256) + config[28]
@@ -255,6 +328,9 @@ class el1_parse:
 
         if model == "elusb2" or model == "elusb2lcd":
             self.elusb2_convert()
+
+        if model == "elusb3_2":
+            self.elusb3_convert()
 
 ###
 ### This part of commented code is for my internal testing... Will be removed

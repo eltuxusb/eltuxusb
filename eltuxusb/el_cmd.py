@@ -39,7 +39,12 @@ class el_cmd:
                 self.status = self.dev1.stop_recording()
                 print self.status
 
-
-
-
+    def overwrite(self):
+        self.dev1 = el1_device(self.debug)
+        print "We will overwrite the device configuration"
+        
+        self.dev1.init()
+        
+        
+        self.dev1.restore_backup()
 

@@ -25,6 +25,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--debug', action="store_true", help="show useful informations for the developpers (do not write anything to the device)")
     parser.add_argument('-D', '--download', help="download the recordings to a file, ex: /home/user/out.txt")
+    parser.add_argument('-O', '--overwrite', action="store_true",  help="!WARNING! erase the config file of the device ex: /home/user/config.txt !WARNING!")
     parser.add_argument('-v', '--version', action="store_true", help="show program version and exit")
     args = parser.parse_args()
                     
@@ -38,6 +39,10 @@ if __name__ == '__main__':
     if args.download:
         app = el_cmd(path=args.download, debug=args.debug)
         app.download()
+
+    if args.overwrite:
+        app = el_cmd(path=args.overwrite, debug=args.debug)
+        app.overwrite()
 
     else:
         app = eltuxusb(debug=args.debug).refresh()
