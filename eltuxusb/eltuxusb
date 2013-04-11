@@ -30,7 +30,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
                     
     if args.version:
-        print "eltuxusb version 4.0 \n"	
+        print "eltuxusb version 5.0 \n"	
         sys.exit(0)
 
     if args.debug:
