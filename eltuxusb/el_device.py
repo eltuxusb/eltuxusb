@@ -154,13 +154,16 @@ class el1_math:
 
 class el1_device:
     "Search, read, write to the device"
-    def __init__(self, debug):
+    def __init__(self, debug, recover_mode):
         self.debug = debug
+        self.recover_mode = recover_mode
         self.device_model = ""
         self.device_full_name = ""
         self.last_error = ""
         self.address = 0
         self.read_config = 0
+        self.str_items = []
+        self.int_items = []
         # ANCIEN BUFFER self.rd_buffer = el1_buffer()
 
         self.new_buffer = el_buffer(self.debug)
@@ -168,8 +171,6 @@ class el1_device:
 
         self.read_block = []
         self.flag_bits = ""
-        self.backup_buffer = [2, 0, 98, 117, 114, 101, 97, 117, 102, 105, 108, 105, 112, 101, 0, 0, 0, 0, 16, 8, 41, 14, 1, 10, 0, 0, 0, 0, 60, 0, 1, 0, 4, 0, 140, 80, 0, 0, 0, 63, 0, 0, 32, 194, 0, 0, 0, 0, 118, 50, 46, 48, 121, 243, 152, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.backup_buffer2 =[12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 248, 26, 0, 2, 0, 0, 0, 0, 0, 63, 0, 0, 32, 194, 0, 0, 0, 0, 0, 0, 0, 0, 177, 177, 152, 0, 0, 0, 0, 0, 251, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     ### "Public" usable functions
     def get_last_err(self):
@@ -277,6 +278,29 @@ class el1_device:
 
         return self.status
 
+    # Read recovery config file from an external file
+    def read_file(self, path):
+     
+        self.config_file = open(path)
+        self.error = 0
+
+        with self.config_file as f:
+            self.str_items = f.readline().strip().split(', ')
+
+        for i in self.str_items:
+           if int(i) > 255 or int(i) < 0:
+               self.error = 1
+           self.int_items.append(int(i))
+   
+        if self.error != 0:
+            return False
+
+        else:
+            if len(self.int_items) != 128 and len(self.int_items) != 256:
+                return False
+            else:
+                return True   
+
     # Restore original backup of the device buffer (The backup_buffer was taken from my device (elusb1), in case I broke something)
     def restore_backup(self):
 
@@ -313,13 +337,7 @@ class el1_device:
             self.last_error = "error reading device configuration"
             return False
         else:
-            print "READCONFIG:", self.read_config
-            print type(self.read_config)
-            print type(self.read_config[40])
             self.read_config = self.read_config.tolist()
-            print type(self.read_config)
-            print type(self.read_config[40])
-            print "READCONFIG_TOLIST:", self.read_config
             self.new_buffer.set_buffer(self.read_config)
             
             if self.debug:
@@ -329,26 +347,24 @@ class el1_device:
     # Write the configuration to the device
     def config_write(self, config_buffer):
 
-        if self.new_buffer.verify_buffer() == False:
-            self.status = "Buffer error"
-            return False
+        if self.recover_mode == False:
+            if self.new_buffer.verify_buffer() == False:
+                self.status = "Buffer error"
+                return False
 
-        else:
+        # initialise device
+        self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x02)
 
-            #dev = device_search(vendorid)
-            # initialise device
-            self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x02)
+        # requesting device configuration
+        msg = [0x01, 0x40, 0x00 ]
+        sent_bytes = self.address.write(0x02, msg, 0, 100)
+        sent_bytes = self.address.write(0x02, config_buffer, 0, 100)
 
-            # requesting device configuration
-            msg = [0x01, 0x40, 0x00 ]
-            sent_bytes = self.address.write(0x02, msg, 0, 100)
-            sent_bytes = self.address.write(0x02, config_buffer, 0, 100)
+        # reading device configuration
+        read_device = self.address.read(0x82, 0x03, 0, 1000)
 
-            # reading device configuration
-            read_device = self.address.read(0x82, 0x03, 0, 1000)
-
-            self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x04)
-            return True
+        self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x04)
+        return True
 
     # Reads the device status (recording, stopped, ...)
     def status_read(self):

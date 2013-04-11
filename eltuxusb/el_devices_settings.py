@@ -21,7 +21,7 @@ class el_settings:
                 "elusbco": 256,
                 "elusbtc": 256,
                 "elusbco300": 256,
-                "elusb2lcd": 256,
+                "elusb2lcd": 128,
                 "elusb2plus": 256}
 
         # Return the device model from the first byte of the config message (1 -> D)

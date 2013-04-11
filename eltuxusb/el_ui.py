@@ -17,12 +17,10 @@ my_directory = os.path.dirname(os.path.realpath(__file__))
 glade_file = os.path.join(my_directory, 'eltuxusb.glade')
 
 class eltuxusb:
-    def __init__(self, debug):
+    def __init__(self, debug, recover_mode):
+        self.recover_mode = recover_mode
         self.debug = debug
-        if self.debug:
-            self.dev1 = el1_device(debug=True)
-        else:
-            self.dev1 = el1_device(debug=False)
+        self.dev1 = el1_device(self.debug, self.recover_mode)
         self.parse = el1_parse()
         self.file = ""
         self.name_recording = ""
@@ -64,8 +62,8 @@ class eltuxusb:
         self.about.set_program_name("ELTuxUSB")
         self.about.set_website("https://github.com/eltuxusb")
         self.about.set_website_label("https://github.com/eltuxusb")
-        self.about.set_copyright(u'Copyright \u00A9 2009-2012 Romain Aviolat')
-        self.about.set_version("0.4")
+        self.about.set_copyright(u'Copyright \u00A9 2009-2013 Romain Aviolat')
+        self.about.set_version("0.5")
         self.about.set_authors(["Romain Aviolat", "David Strauss"])
 
         self.about.run()
@@ -159,7 +157,7 @@ class eltuxusb:
             self.widgets.get_object('recordings').show()
 
 
-            if self.model != "elusb2" and self.model != "elusb1_17" and self.model != "elusb3_2":
+            if self.model != "elusb2" and self.model != "elusb1_17" and self.model != "elusb3_2" and self.model != "elusb2lcd":
                 self.widgets.get_object('download_button').set_sensitive(False)
                 self.widgets.get_object('stop_button').set_sensitive(False)
                 self.widgets.get_object('new_button').set_sensitive(False)
