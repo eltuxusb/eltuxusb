@@ -9,8 +9,9 @@ from el_input import *  # <- need to clean, dirty
 from el_parse import *  # <- need to clean, dirty
 
 class el_cmd:
-    def __init__(self, path, debug):
+    def __init__(self, path, debug, recover_mode):
         self.debug = debug
+        self.recover_mode = recover_mode
         self.path = path
         self.parse = el1_parse()
 
@@ -19,7 +20,7 @@ class el_cmd:
         self.full_name = ""
         self.config = ""
 
-        self.dev1 = el1_device(self.debug)
+        self.dev1 = el1_device(self.debug, self.recover_mode)
 
         if self.dev1.init() == False:
             print (self.dev1.get_last_err())
@@ -39,7 +40,20 @@ class el_cmd:
                 self.status = self.dev1.stop_recording()
                 print self.status
 
+    def recover(self):
+        self.dev1 = el1_device(self.debug, self.recover_mode)
 
+        if os.path.exists(self.path):
+            
 
+            self.dev1.init()
 
+            if self.dev1.read_file(self.path):
+                print "File successfully imported"
+        
+        else:
+            #THIS CHECK SHOULD ME MADE INSIDE THE DEF READ_FILE
+            print "File does not exists"
+
+        #self.dev1.restore_backup()
 

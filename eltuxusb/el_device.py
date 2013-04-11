@@ -6,7 +6,8 @@ import usb.util
 import sys
 import datetime
 import time
-from el_devices_settings import *
+#import el_devices_settings *
+from el_devices_settings import el_settings, el_buffer
 
 class el1_buffer:
     "Device configuration buffer"
@@ -37,8 +38,12 @@ class el1_buffer:
         self.lal_ch2 = 0
         self.roll_count = 0
         self.res1 = 0
-        self.res2 = 0
         self.raw_buffer = []
+
+
+class el_test:
+    def __init__(self):
+        self.rrr = 0
 
 
 class el1_math:
@@ -46,6 +51,20 @@ class el1_math:
     def __init__(self):
         self.fake = 0
     
+    # Extract the name of the recording from the config buffer
+    def name_translate(self, raw_config):
+        self.name = ""
+
+        self.name_byte = raw_config
+
+        for i in self.name_byte:
+
+            if i == 0:
+                break
+            else:
+                self.name += (chr(i))
+        return self.name
+
     # Convert alarm to a decimal value
     def alarm_convert(self, value, unit):
         self.value_converted = 0
@@ -75,6 +94,16 @@ class el1_math:
         while len(bin_32) < 8:
             bin_32 = "0" + bin_32
         return bin_32
+
+    # convert base 256 serial number to base 10
+    def sn_convert(self, sn):
+        base10sn = self.base256to10(sn)
+        base10sn = str(base10sn)
+        
+        while len(base10sn) < 9:
+            base10sn = "0" + base10sn
+
+        return base10sn
 
     # convert base 256 numbers to base 10
     def base256to10(self, base256):
@@ -125,21 +154,23 @@ class el1_math:
 
 class el1_device:
     "Search, read, write to the device"
-    def __init__(self, debug):
+    def __init__(self, debug, recover_mode):
         self.debug = debug
+        self.recover_mode = recover_mode
         self.device_model = ""
         self.device_full_name = ""
         self.last_error = ""
         self.address = 0
         self.read_config = 0
+        self.str_items = []
+        self.int_items = []
         # ANCIEN BUFFER self.rd_buffer = el1_buffer()
 
-        self.new_buffer = el_buffer()
+        self.new_buffer = el_buffer(self.debug)
         self.settings = el_settings()
 
         self.read_block = []
         self.flag_bits = ""
-        self.backup_buffer = [2, 0, 98, 117, 114, 101, 97, 117, 102, 105, 108, 105, 112, 101, 0, 0, 0, 0, 16, 8, 41, 14, 1, 10, 0, 0, 0, 0, 60, 0, 1, 0, 4, 0, 140, 80, 0, 0, 0, 63, 0, 0, 32, 194, 0, 0, 0, 0, 118, 50, 46, 48, 121, 243, 152, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     ### "Public" usable functions
     def get_last_err(self):
@@ -247,16 +278,42 @@ class el1_device:
 
         return self.status
 
+    # Read recovery config file from an external file
+    def read_file(self, path):
+     
+        self.config_file = open(path)
+        self.error = 0
+
+        with self.config_file as f:
+            self.str_items = f.readline().strip().split(', ')
+
+        for i in self.str_items:
+           if int(i) > 255 or int(i) < 0:
+               self.error = 1
+           self.int_items.append(int(i))
+   
+        if self.error != 0:
+            return False
+
+        else:
+            if len(self.int_items) != 128 and len(self.int_items) != 256:
+                return False
+            else:
+                return True   
+
     # Restore original backup of the device buffer (The backup_buffer was taken from my device (elusb1), in case I broke something)
     def restore_backup(self):
+
         if self.device_search() == False :
             return False
 
         if self.config_read() == False:
             return False
 
-        if self.config_write(self.backup_buffer) != True:
+        if self.config_write(self.backup_buffer2) != True:
             return False
+        else:
+            print "OK"
 
     # Reads the device configuration
     def config_read(self):
@@ -275,7 +332,7 @@ class el1_device:
             self.size = read_device[1] + 1
 
         self.read_config = self.address.read(0x82, self.size, 0, 1000)
-        #print self.read_config
+
         if len(self.read_config) == 0:
             self.last_error = "error reading device configuration"
             return False
@@ -290,25 +347,24 @@ class el1_device:
     # Write the configuration to the device
     def config_write(self, config_buffer):
 
-        if self.new_buffer.verify_buffer() == False:
-            self.status = "Buffer error"
-            return False
+        if self.recover_mode == False:
+            if self.new_buffer.verify_buffer() == False:
+                self.status = "Buffer error"
+                return False
 
-        else:
-            #dev = device_search(vendorid)
-            # initialise device
-            self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x02)
+        # initialise device
+        self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x02)
 
-            # requesting device configuration
-            msg = [0x01, 0x40, 0x00 ]
-            sent_bytes = self.address.write(0x02, msg, 0, 100)
-            sent_bytes = self.address.write(0x02, config_buffer, 0, 100)
+        # requesting device configuration
+        msg = [0x01, 0x40, 0x00 ]
+        sent_bytes = self.address.write(0x02, msg, 0, 100)
+        sent_bytes = self.address.write(0x02, config_buffer, 0, 100)
 
-            # reading device configuration
-            read_device = self.address.read(0x82, 0x03, 0, 1000)
+        # reading device configuration
+        read_device = self.address.read(0x82, 0x03, 0, 1000)
 
-            self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x04)
-            return True
+        self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x04)
+        return True
 
     # Reads the device status (recording, stopped, ...)
     def status_read(self):
