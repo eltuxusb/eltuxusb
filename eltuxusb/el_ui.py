@@ -10,18 +10,17 @@ from el_device import * # <- need to clean, dirty
 from el_input import *  # <- need to clean, dirty
 from el_parse import *  # <- need to clean, dirty
 from el_plot import *  # <- need to clean, dirty
+#from el_devices_settings import * # <- need to clean, dirty
 
 # Auto-determine the location of the Glade file.
 my_directory = os.path.dirname(os.path.realpath(__file__))
 glade_file = os.path.join(my_directory, 'eltuxusb.glade')
 
 class eltuxusb:
-    def __init__(self, debug):
+    def __init__(self, debug, recover_mode):
+        self.recover_mode = recover_mode
         self.debug = debug
-        if self.debug:
-            self.dev1 = el1_device(debug=True)
-        else:
-            self.dev1 = el1_device(debug=False)
+        self.dev1 = el1_device(self.debug, self.recover_mode)
         self.parse = el1_parse()
         self.file = ""
         self.name_recording = ""
@@ -63,8 +62,8 @@ class eltuxusb:
         self.about.set_program_name("ELTuxUSB")
         self.about.set_website("https://github.com/eltuxusb")
         self.about.set_website_label("https://github.com/eltuxusb")
-        self.about.set_copyright(u'Copyright \u00A9 2009-2012 Romain Aviolat')
-        self.about.set_version("0.4")
+        self.about.set_copyright(u'Copyright \u00A9 2009-2013 Romain Aviolat')
+        self.about.set_version("0.5")
         self.about.set_authors(["Romain Aviolat", "David Strauss"])
 
         self.about.run()
@@ -142,7 +141,9 @@ class eltuxusb:
             config  = self.dev1.get_config()
             self.full_name = self.dev1.device_full_name
 
-            self.sample_count = el1_math().base256to10(config[30:32])
+            self.math = el1_math()
+
+            self.sample_count = self.math.base256to10(config[30:32])
 
             if self.sample_count == 0:
                 self.widgets.get_object('download_button').set_sensitive(False)
@@ -155,61 +156,69 @@ class eltuxusb:
             self.widgets.get_object('label21').show()
             self.widgets.get_object('recordings').show()
 
-            if flag_bits[8] == "1":
-                self.status_msg += "delayed start or logging, "
-                self.widgets.get_object('stop_button').set_sensitive(True)
-            else:
-                self.status_msg += "stopped, "
+
+            if self.model != "elusb2" and self.model != "elusb1_17" and self.model != "elusb3_2" and self.model != "elusb2lcd":
+                self.widgets.get_object('download_button').set_sensitive(False)
                 self.widgets.get_object('stop_button').set_sensitive(False)
+                self.widgets.get_object('new_button').set_sensitive(False)
+                self.widgets.get_object('label15').set_text(self.full_name)
+                self.widgets.get_object('label2').set_text("DEVICE NOT SUPPORTED YET")
 
-            if flag_bits[9] == "1":
-                self.status_msg += "data NOT downloaded"
             else:
-                self.status_msg += "data ALREADY downloaded"
 
-            if flag_bits[10] == "1":
-                self.status_msg += ", during the last acquisition battery level dropped to a low level but logging continued"
+                if flag_bits[8] == "1":
+                    self.status_msg += "delayed start or logging, "
+                    self.widgets.get_object('stop_button').set_sensitive(True)
+                else:
+                    self.status_msg += "stopped, "
+                    self.widgets.get_object('stop_button').set_sensitive(False)
 
-            if flag_bits[11] == "1":
-                self.status_msg += ", during the last acquisition battery level dropped to a critical level and logging stopped"
+                if flag_bits[9] == "1":
+                    self.status_msg += "data NOT downloaded"
+                else:
+                    self.status_msg += "data ALREADY downloaded"
 
-            self.widgets.get_object('label2').set_text(self.status_msg)
-            self.widgets.get_object('label15').set_text(self.full_name)
+                if flag_bits[10] == "1":
+                    self.status_msg += ", during the last acquisition battery level dropped to a low level but logging continued"
 
-            self.widgets.get_object("found").show()
-            self.widgets.get_object("not_found").hide()
-            #self.widgets.get_object('stop_button').set_sensitive(True)
+                if flag_bits[11] == "1":
+                    self.status_msg += ", during the last acquisition battery level dropped to a critical level and logging stopped"
 
-            self.widgets.get_object('new_button').set_sensitive(True)
-            self.name_recording = self.parse.name_translate(self.dev1.get_config())
+                self.widgets.get_object('label2').set_text(self.status_msg)
+                self.widgets.get_object('label15').set_text(self.full_name)
 
-            self.widgets.get_object('entry1').set_text(self.name_recording)
+                self.widgets.get_object("found").show()
+                self.widgets.get_object("not_found").hide()
+                #self.widgets.get_object('stop_button').set_sensitive(True)
 
-            self.widgets.get_object('checkbutton4').set_sensitive(False)
-            self.widgets.get_object('checkbutton5').set_sensitive(False)
-            self.widgets.get_object('checkbutton7').set_sensitive(False)
-            self.widgets.get_object('checkbutton9').set_sensitive(False)
+                self.widgets.get_object('new_button').set_sensitive(True)
+                self.name_recording = self.math.name_translate(self.dev1.get_config()[2:18])
 
-            if self.model == "elusb2" or self.model == "elusb2lcd":
-                self.widgets.get_object("hbox13").show()
-                self.widgets.get_object("hbox14").show()
-                self.widgets.get_object("hbox15").show()
-                self.widgets.get_object("hbox16").show()
-            else:
-                self.widgets.get_object("hbox13").hide()
-                self.widgets.get_object("hbox14").hide()
-                self.widgets.get_object("hbox15").hide()
-                self.widgets.get_object("hbox16").hide()
-            
+                self.widgets.get_object('entry1').set_text(self.name_recording)
+
+                self.widgets.get_object('checkbutton4').set_sensitive(False)
+                self.widgets.get_object('checkbutton5').set_sensitive(False)
+                self.widgets.get_object('checkbutton7').set_sensitive(False)
+                self.widgets.get_object('checkbutton9').set_sensitive(False)
+
+                if self.model == "elusb2" or self.model == "elusb2lcd":
+                    self.widgets.get_object("hbox13").show()
+                    self.widgets.get_object("hbox14").show()
+                    self.widgets.get_object("hbox15").show()
+                    self.widgets.get_object("hbox16").show()
+                else:
+                    self.widgets.get_object("hbox13").hide()
+                    self.widgets.get_object("hbox14").hide()
+                    self.widgets.get_object("hbox15").hide()
+                    self.widgets.get_object("hbox16").hide()
+
             if self.debug:
-                print "#DEBUG# DEVICE STATE: %s" % self.status_msg  
-                print "#DEBUG# RECORDING COUNT: %d" % self.sample_count             
 
-        if self.debug:
-            self.widgets.get_object('label1').set_text("eltuxusb device manager (DEBUG MODE)")
+                self.widgets.get_object('label1').set_text("eltuxusb device manager (DEBUG MODE)")
+                print "#DEBUG# DEVICE STATE: %s" % self.status_msg  
+                print "#DEBUG# RECORDING COUNT: %d" % self.sample_count
 
         return True
-        
 
     def delay_recording(self, source=None, event=None):
         self.hour = time.localtime()[3]
@@ -307,7 +316,7 @@ class eltuxusb:
 
         # Read the entered recording name, and check if there's no illegal char in it, then we convert it to ascii string
         self.recording_name = self.widgets.get_object('entry1').get_text()
-        self.illegal_char = el1_math().illegal_char(self.recording_name)
+        self.illegal_char = self.math.illegal_char(self.recording_name)
 
         if self.illegal_char:
             self.status = 1
@@ -320,7 +329,7 @@ class eltuxusb:
         self.sample_rate = self.widgets.get_object('combobox1').get_model()[self.combobox_item][1]
            
         # And convert it from base 10 to 256
-        self.converted_sample_rate = el1_math().base10to256(self.sample_rate, 2)
+        self.converted_sample_rate = self.math.base10to256(self.sample_rate, 2)
 
         # We check if the recording is delayed or not and set the start time/date value
         if self.widgets.get_object('checkbutton1').get_active() == True:
@@ -348,7 +357,7 @@ class eltuxusb:
             self.status = 1
 
         # We convert the offset seconds into a readable format for the device
-        self.offset_seconds_converted = el1_math().base10to256(self.offset_seconds, 4)
+        self.offset_seconds_converted = self.math.base10to256(self.offset_seconds, 4)
 
         # Check the unit selected (Celsuis=0 or Fahrenheit=1)
         if self.widgets.get_object('radiobutton1').get_active():
@@ -360,7 +369,7 @@ class eltuxusb:
         if self.widgets.get_object('checkbutton2').get_active() == True:
             self.high_alarm = "1"
             self.high_alarm_value = self.widgets.get_object('spin_button_high_alarm').get_value_as_int()
-            self.high_alarm_value_converted = el1_math().alarm_convert(self.high_alarm_value, self.unit)
+            self.high_alarm_value_converted = self.math.alarm_convert(self.high_alarm_value, self.unit)
 
             if self.widgets.get_object('checkbutton4').get_active() == True:
                 self.high_alarm_latch = "1"
@@ -374,7 +383,7 @@ class eltuxusb:
         if self.widgets.get_object('checkbutton3').get_active() == True:
             self.low_alarm = "1"
             self.low_alarm_value = self.widgets.get_object('spin_button_low_alarm').get_value_as_int()
-            self.low_alarm_value_converted = el1_math().alarm_convert(self.low_alarm_value, self.unit)
+            self.low_alarm_value_converted = self.math.alarm_convert(self.low_alarm_value, self.unit)
 
 
             if self.widgets.get_object('checkbutton5').get_active() == True:
@@ -389,7 +398,7 @@ class eltuxusb:
             if self.widgets.get_object('checkbutton6').get_active() == True:
                 self.high_humidity_alarm = "1"
                 self.high_humidity_alarm_value = self.widgets.get_object('spin_button_high_h_alarm').get_value_as_int()
-                self.high_humidity_alarm_value_converted = el1_math().humidity_alarm_convert(self.high_humidity_alarm_value)
+                self.high_humidity_alarm_value_converted = self.math.humidity_alarm_convert(self.high_humidity_alarm_value)
 
                 if self.widgets.get_object('checkbutton7').get_active() == True:
                     self.high_humidity_alarm_latch = "1"
@@ -403,7 +412,7 @@ class eltuxusb:
             if self.widgets.get_object('checkbutton8').get_active() == True:
                 self.low_humidity_alarm = "1"
                 self.low_humidity_alarm_value = self.widgets.get_object('spin_button_low_h_alarm').get_value_as_int()
-                self.low_humidity_alarm_value_converted = el1_math().humidity_alarm_convert(self.low_humidity_alarm_value)
+                self.low_humidity_alarm_value_converted = self.math.humidity_alarm_convert(self.low_humidity_alarm_value)
 
                 if self.widgets.get_object('checkbutton9').get_active() == True:
                     self.low_humidity_alarm_latch = "1"
@@ -435,8 +444,10 @@ class eltuxusb:
             self.dev1.new_buffer.set_day(self.start_day)
             self.dev1.new_buffer.set_month(self.start_month)
             self.dev1.new_buffer.set_year(self.start_year)
-            self.dev1.new_buffer.set_hal(self.high_alarm_value_converted)
-            self.dev1.new_buffer.set_lal(self.low_alarm_value_converted)
+
+            if self.model != "elusb3_2":
+                self.dev1.new_buffer.set_hal(self.high_alarm_value_converted)
+                self.dev1.new_buffer.set_lal(self.low_alarm_value_converted)
 
             self.dev1.new_buffer.set_sample_count([0, 0])
 

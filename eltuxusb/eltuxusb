@@ -25,22 +25,27 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--debug', action="store_true", help="show useful informations for the developpers (do not write anything to the device)")
     parser.add_argument('-D', '--download', help="download the recordings to a file, ex: /home/user/out.txt")
+    parser.add_argument('-R', '--recover',  help="!WARNING! reprogram the device configuration from the given file ex: /home/user/config.txt !WARNING!")
     parser.add_argument('-v', '--version', action="store_true", help="show program version and exit")
     args = parser.parse_args()
                     
     if args.version:
-        print "eltuxusb version 4.0 \n"	
+        print "eltuxusb version 5.0 \n"	
         sys.exit(0)
 
     if args.debug:
         print "#DEBUG# Starting eltuxusb in debug mode (nothing will be written on the device)"
 
     if args.download:
-        app = el_cmd(path=args.download, debug=args.debug)
+        app = el_cmd(path=args.download, debug=args.debug, recover_mode=False)
         app.download()
 
+    if args.recover:
+        app = el_cmd(path=args.recover, debug=args.debug, recover_mode=True)
+        app.recover()
+
     else:
-        app = eltuxusb(debug=args.debug).refresh()
+        app = eltuxusb(debug=args.debug, recover_mode=False).refresh()
         Gtk.main()
 
 
