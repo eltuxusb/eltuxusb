@@ -14,7 +14,7 @@ Support will be extended to other Lascar products if possible (if we actually ha
 
 We need read and write access to the device. To do this as a non-root user, the PIP installer should automatically create the following udev rule: /etc/udev/rules.d/10-local.rules
 
-    SUBSYSTEM=="usb", ATTR{idVendor}=="10c4", ATTR{idProduct}=="0002", MODE:="0666", GROUP:="usbusers"
+    SUBSYSTEM=="usb",ATTR{idVendor}=="10c4",ATTR{idProduct}=="0002",MODE="0666",GROUP="usbusers"
 
 If not create it by hand.
 
