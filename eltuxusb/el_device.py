@@ -322,16 +322,17 @@ class el1_device:
 
         # requesting device configuration
         msg = [0x00, 0xFF, 0xFF]
-        sent_bytes = self.address.write(0x02, msg, 0, 100)
+        print msg
+        sent_bytes = self.address.write(0x02, msg, 100)
         # reading device configuration
-        read_device = self.address.read(0x82, 0x03, 0, 1000)
+        read_device = self.address.read(0x82, 0x03, 1000)
 
         if read_device[2] == 1:
             self.size = 257
         else:
             self.size = read_device[1] + 1
 
-        self.read_config = self.address.read(0x82, self.size, 0, 1000)
+        self.read_config = self.address.read(0x82, self.size, 1000)
 
         if len(self.read_config) == 0:
             self.last_error = "error reading device configuration"
@@ -343,6 +344,8 @@ class el1_device:
             if self.debug:
                 print "#DEBUG# BUFFER SIZE: %s" % len(self.read_config)
                 print "#DEBUG# ORIGINAL BUFFER: %s" % self.read_config
+
+        usb.util.release_interface(self.address, 0x00)   
 
     # Write the configuration to the device
     def config_write(self, config_buffer):
@@ -357,11 +360,11 @@ class el1_device:
 
         # requesting device configuration
         msg = [0x01, 0x40, 0x00 ]
-        sent_bytes = self.address.write(0x02, msg, 0, 100)
-        sent_bytes = self.address.write(0x02, config_buffer, 0, 100)
+        sent_bytes = self.address.write(0x02, msg, 100)
+        sent_bytes = self.address.write(0x02, config_buffer, 100)
 
         # reading device configuration
-        read_device = self.address.read(0x82, 0x03, 0, 1000)
+        read_device = self.address.read(0x82, 0x03, 1000)
 
         self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x04)
         return True
@@ -387,21 +390,21 @@ class el1_device:
 
         # requesting device configuration
         msg = [0x00, 0xFF, 0xFF]
-        sent_bytes = self.address.write(0x02, msg, 0, 100)
+        sent_bytes = self.address.write(0x02, msg, 100)
 
         # reading device configuration
-        read_device = self.address.read(0x82, 0x03, 0, 1000)
-        read_config = self.address.read(0x82, 0x1000, 0, 1000)
+        read_device = self.address.read(0x82, 0x03, 1000)
+        read_config = self.address.read(0x82, 0x1000, 1000)
 
         # initialise device
         self.address.ctrl_transfer(bmRequestType=0x40, bRequest=0x02, wValue=0x02)
 
         # request device configuration
         msg = [0x03, 0xFF, 0xFF]
-        sent_bytes = self.address.write(0x02, msg, 0, 100)
+        sent_bytes = self.address.write(0x02, msg, 100)
 
         # read device configuration
-        read_device = self.address.read(0x82, 0x03, 0, 1000)
+        read_device = self.address.read(0x82, 0x03, 1000)
 
         self.device_nb_packets = self.settings.get_device_nb_packets(self.device_model)
 
@@ -409,9 +412,11 @@ class el1_device:
 
         # read the recordings (size depends of the device)
         for i in range(self.device_nb_packets):
-            self.read_block.extend(self.address.read(0x82, 0x1000, 0, 1000))
+            self.read_block.extend(self.address.read(0x82, 0x1000, 1000))
 
         if self.debug:
             print "#DEBUG# RECORDED DATAS: %s" % self.read_block[0:1000]
 
         return True
+
+
