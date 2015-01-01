@@ -28,6 +28,7 @@ if __name__ == '__main__':
     parser.add_argument('-R', '--recover',  help="!WARNING! reprogram the device configuration from the given file ex: /home/user/config.txt !WARNING!")
     parser.add_argument('-v', '--version', action="store_true", help="show program version and exit")
     args = parser.parse_args()
+    print "main function"
                     
     if args.version:
         print "eltuxusb version 5.0 \n"	
@@ -38,14 +39,18 @@ if __name__ == '__main__':
 
     if args.download:
         app = el_cmd(path=args.download, debug=args.debug, recover_mode=False)
+        print "download mode"
         app.download()
+        sys.exit(0)
 
     if args.recover:
         app = el_cmd(path=args.recover, debug=args.debug, recover_mode=True)
         app.recover()
+        sys.exit(0)
 
     else:
         app = eltuxusb(debug=args.debug, recover_mode=False).refresh()
+        print "loading UI"
         Gtk.main()
 
 

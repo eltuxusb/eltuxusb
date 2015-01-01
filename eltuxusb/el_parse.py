@@ -332,6 +332,10 @@ class el1_parse:
         if model == "elusb3_2":
             self.elusb3_convert()
 
+        if model == "elusb1pro":
+            self.elusb1_convert()
+
+
 ###
 ### This part of commented code is for my internal testing... Will be removed
 ###

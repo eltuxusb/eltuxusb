@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Here we set the diffrent values for the different devices
+# Here we set the different values for the different devices
 
 class el_settings:
     "Here we return the settings of the different devices"
@@ -22,7 +22,8 @@ class el_settings:
                 "elusbtc": 256,
                 "elusbco300": 256,
                 "elusb2lcd": 128,
-                "elusb2plus": 256}
+                "elusb2plus": 256,
+                "elusb1pro": 256}
 
         # Return the device model from the first byte of the config message (1 -> D)
         self.device_model = {
@@ -38,7 +39,8 @@ class el_settings:
                 "10": "elusbtc",
                 "11": "elusbco300",
                 "12": "elusb2lcd",
-                "13": "elusb2plus"}
+                "13": "elusb2plus",
+                "14": "elusb1pro"}
 
         # Return the full name (commercial) of the device
         self.device_full_name = {
@@ -54,7 +56,8 @@ class el_settings:
                 "elusbtc": "EL-USB-TC Thermocouple Temperature Logger",
                 "elusbco300": "EL-USB-CO300 Low Range Carbon Monoxide Logger",
                 "elusb2lcd": "EL-USB-2-LCD",
-                "elusb2plus": "EL-USB-2+"}
+                "elusb2plus": "EL-USB-2+",
+                "elusb1pro": "EL-USB-1-PRO"}
 
         # Define the number of packets we should read from the device when downloading the recordings
         self.device_nb_packets = {
@@ -70,7 +73,8 @@ class el_settings:
                 "elusbtc": 127,
                 "elusbco300": 127,
                 "elusb2lcd": 64,
-                "elusb2plus": 64}
+                "elusb2plus": 64,
+                "elusb1pro": 127}
 
         # Define which conversion diagram should be used for the recorded datas (some devices use the same conversion diagram)
         self.data_conversion_diagram = {
@@ -86,7 +90,8 @@ class el_settings:
                 "elusbtc": "not defined yet",
                 "elusbco300": "not defined yet",
                 "elusb2lcd": "elusb2_convert",
-                "elusb2plus": "not defined yet"}
+                "elusb2plus": "not defined yet",
+                "elusb1pro": "elusb1_convert"}
 
     ######
     # Public functions
@@ -262,7 +267,7 @@ class el_buffer:
         self.calib_c = self.actual_buffer[40:44]
         self.version = self.actual_buffer[48:52]
 
-        if self.model == "elusb1_16" or self.model == "elusb1_17" or self.model == "elusb2" or self.model == "elusb2lcd" or self.model == "elusb2plus" or self.model == "elusb3_2":
+        if self.model == "elusb1_16" or self.model == "elusb1_17" or self.model == "elusb2" or self.model == "elusb2lcd" or self.model == "elusb2plus" or self.model == "elusb3_2" or self.model == "elusb1pro":
 
             if self.model == "elusb3_2":
                 self.hal = self.actual_buffer[34:36]
@@ -339,7 +344,6 @@ class el_buffer:
             print "#DEBUG# CALIB C VALUE: %s" % self.calib_c
             print "#DEBUG# SERIAL NUMBER: %s" % self.sn
 
-
             self.sn = self.actual_buffer[52:56]
 
             if self.model == "elusb3_2":
@@ -406,7 +410,7 @@ class el_buffer:
                                           + self.sample_count \
                                           + self.flag_bits
 
-        if self.model == "elusb1_16" or self.model == "elusb1_17" or self.model == "elusb2" or self.model == "elusb2lcd" or self.model == "elusb2plus" or self.model == "elusb3_2":
+        if self.model == "elusb1_16" or self.model == "elusb1_17" or self.model == "elusb2" or self.model == "elusb2lcd" or self.model == "elusb2plus" or self.model == "elusb3_2" or self.model == "elusb1pro":
 
 
             if self.model == "elusb3_2":

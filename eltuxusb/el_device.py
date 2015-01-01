@@ -415,8 +415,11 @@ class el1_device:
             self.read_block.extend(self.address.read(0x82, 0x1000, 1000))
 
         if self.debug:
+            print "#DEBUG# NB RECORDS: %s" % len(self.read_block)
             print "#DEBUG# RECORDED DATAS: %s" % self.read_block[0:1000]
 
+        usb.util.release_interface(self.address, 0x00)   
+        
         return True
 
 

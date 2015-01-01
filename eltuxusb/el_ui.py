@@ -157,7 +157,7 @@ class eltuxusb:
             self.widgets.get_object('recordings').show()
 
 
-            if self.model != "elusb2" and self.model != "elusb1_17" and self.model != "elusb3_2" and self.model != "elusb2lcd":
+            if self.model != "elusb2" and self.model != "elusb1_17" and self.model != "elusb3_2" and self.model != "elusb2lcd" and self.model != "elusb1pro":
                 self.widgets.get_object('download_button').set_sensitive(False)
                 self.widgets.get_object('stop_button').set_sensitive(False)
                 self.widgets.get_object('new_button').set_sensitive(False)
