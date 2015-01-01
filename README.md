@@ -1,5 +1,7 @@
 # eltuxusb
 
+This program aim to provide Linux support for the data loggers from Lascar Electronics.
+
 ## Supported hardware
 
 This program only works with the following devices:
